@@ -171,11 +171,11 @@ app.get("/api/top-artists", async (req, res) => {
     const topArtists = response.data.items.map((artist, index) => ({
       rank: index + 1,
       name: artist.name,
-      genres: artist.genres.join(", "),
+      genres: artist.genres?.join(", ") || "",
       image: artist.images[0]?.url,
       spotifyUrl: artist.external_urls.spotify,
       popularity: artist.popularity,
-      followers: artist.followers.total,
+      followers: artist.followers?.total || 0,
     }));
 
     res.json({ topArtists });
