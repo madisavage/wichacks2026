@@ -142,6 +142,123 @@ app.get("/api/top-songs", async (req, res) => {
   }
 });
 
+// Get user's top artists
+app.get("/api/top-artists", async (req, res) => {
+  try {
+    const userAccessToken =
+      req.query.token || req.headers.authorization?.split(" ")[1];
+
+    if (!userAccessToken) {
+      return res.status(401).json({
+        error: "No access token provided. User authentication required.",
+      });
+    }
+
+    // Fetch top artists from Spotify API
+    const response = await axios.get(
+      "https://api.spotify.com/v1/me/top/artists",
+      {
+        headers: {
+          Authorization: `Bearer ${userAccessToken}`,
+        },
+        params: {
+          limit: 20,
+          time_range: "medium_term",
+        },
+      },
+    );
+
+    const topArtists = response.data.items.map((artist, index) => ({
+      rank: index + 1,
+      name: artist.name,
+      genres: artist.genres.join(", "),
+      image: artist.images[0]?.url,
+      spotifyUrl: artist.external_urls.spotify,
+      popularity: artist.popularity,
+      followers: artist.followers.total,
+    }));
+
+    res.json({ topArtists });
+  } catch (error) {
+    console.error(
+      "Error fetching top artists:",
+      error.response?.data || error.message,
+    );
+    res.status(error.response?.status || 500).json({
+      error: "Failed to fetch top artists",
+      details: error.response?.data?.error?.message || error.message,
+    });
+  }
+});
+
+// Get user's top albums (derived from top tracks)
+app.get("/api/top-albums", async (req, res) => {
+  try {
+    const userAccessToken =
+      req.query.token || req.headers.authorization?.split(" ")[1];
+
+    if (!userAccessToken) {
+      return res.status(401).json({
+        error: "No access token provided. User authentication required.",
+      });
+    }
+
+    // Fetch top tracks to get albums
+    const response = await axios.get(
+      "https://api.spotify.com/v1/me/top/tracks",
+      {
+        headers: {
+          Authorization: `Bearer ${userAccessToken}`,
+        },
+        params: {
+          limit: 50,
+          time_range: "medium_term",
+        },
+      },
+    );
+
+    // Extract unique albums and count occurrences
+    const albumMap = new Map();
+    response.data.items.forEach((track) => {
+      const album = track.album;
+      if (!albumMap.has(album.id)) {
+        albumMap.set(album.id, {
+          id: album.id,
+          name: album.name,
+          artist: album.artists.map((artist) => artist.name).join(", "),
+          image: album.images[0]?.url,
+          spotifyUrl: album.external_urls.spotify,
+          releaseDate: album.release_date,
+          totalTracks: album.total_tracks,
+          count: 1,
+        });
+      } else {
+        albumMap.get(album.id).count++;
+      }
+    });
+
+    // Sort by count and add rank
+    const topAlbums = Array.from(albumMap.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 20)
+      .map((album, index) => ({
+        rank: index + 1,
+        ...album,
+      }));
+
+    res.json({ topAlbums });
+  } catch (error) {
+    console.error(
+      "Error fetching top albums:",
+      error.response?.data || error.message,
+    );
+    res.status(error.response?.status || 500).json({
+      error: "Failed to fetch top albums",
+      details: error.response?.data?.error?.message || error.message,
+    });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

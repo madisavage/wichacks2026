@@ -116,3 +116,157 @@ document.getElementById("load-top-songs").addEventListener("click", () => {
     );
   }
 });
+
+//* TOP ARTISTS *//
+async function fetchTopArtists(accessToken) {
+  const container = document.getElementById("top-artists-container");
+  const loadButton = document.getElementById("load-top-artists");
+
+  container.innerHTML = '<p class="loading">Loading your top artists...</p>';
+  loadButton.disabled = true;
+
+  try {
+    const response = await fetch(`/api/top-artists?token=${accessToken}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to fetch top artists");
+    }
+
+    displayTopArtists(data.topArtists);
+  } catch (error) {
+    container.innerHTML = `
+            <div class="error">
+                <p>❌ ${error.message}</p>
+                <p class="error-note">Note: To view your top artists, you need to authenticate with Spotify.</p>
+            </div>
+        `;
+  } finally {
+    loadButton.disabled = false;
+  }
+}
+
+function displayTopArtists(artists) {
+  const container = document.getElementById("top-artists-container");
+
+  if (!artists || artists.length === 0) {
+    container.innerHTML = '<p class="no-data">No top artists found.</p>';
+    return;
+  }
+
+  const artistsHTML = artists
+    .map(
+      (artist) => `
+            <div class="song-item">
+                <div class="song-rank">#${artist.rank}</div>
+                <div class="song-image">
+                    <img src="${artist.image}" alt="${artist.name}">
+                </div>
+                <div class="song-info">
+                    <h3 class="song-name">${artist.name}</h3>
+                    <p class="song-artist">${artist.genres || "No genres listed"}</p>
+                    <p class="song-album">Popularity: ${artist.popularity}/100 • ${artist.followers.toLocaleString()} followers</p>
+                </div>
+                <div class="song-actions">
+                    <a href="${artist.spotifyUrl}" target="_blank" class="btn-spotify">Open in Spotify</a>
+                </div>
+            </div>
+        `,
+    )
+    .join("");
+
+  container.innerHTML = `<div class="songs-list">${artistsHTML}</div>`;
+}
+
+document.getElementById("load-top-artists").addEventListener("click", () => {
+  let accessToken = storedAccessToken;
+
+  if (!accessToken) {
+    accessToken = prompt("Enter your Spotify access token:");
+  }
+
+  if (accessToken) {
+    fetchTopArtists(accessToken);
+  } else {
+    alert(
+      "Access token is required to fetch your top artists. Please authenticate first.",
+    );
+  }
+});
+
+//* TOP ALBUMS *//
+async function fetchTopAlbums(accessToken) {
+  const container = document.getElementById("top-albums-container");
+  const loadButton = document.getElementById("load-top-albums");
+
+  container.innerHTML = '<p class="loading">Loading your top albums...</p>';
+  loadButton.disabled = true;
+
+  try {
+    const response = await fetch(`/api/top-albums?token=${accessToken}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to fetch top albums");
+    }
+
+    displayTopAlbums(data.topAlbums);
+  } catch (error) {
+    container.innerHTML = `
+            <div class="error">
+                <p>❌ ${error.message}</p>
+                <p class="error-note">Note: To view your top albums, you need to authenticate with Spotify.</p>
+            </div>
+        `;
+  } finally {
+    loadButton.disabled = false;
+  }
+}
+
+function displayTopAlbums(albums) {
+  const container = document.getElementById("top-albums-container");
+
+  if (!albums || albums.length === 0) {
+    container.innerHTML = '<p class="no-data">No top albums found.</p>';
+    return;
+  }
+
+  const albumsHTML = albums
+    .map(
+      (album) => `
+            <div class="song-item">
+                <div class="song-rank">#${album.rank}</div>
+                <div class="song-image">
+                    <img src="${album.image}" alt="${album.name}">
+                </div>
+                <div class="song-info">
+                    <h3 class="song-name">${album.name}</h3>
+                    <p class="song-artist">${album.artist}</p>
+                    <p class="song-album">${album.totalTracks} tracks • Released: ${album.releaseDate}</p>
+                </div>
+                <div class="song-actions">
+                    <a href="${album.spotifyUrl}" target="_blank" class="btn-spotify">Open in Spotify</a>
+                </div>
+            </div>
+        `,
+    )
+    .join("");
+
+  container.innerHTML = `<div class="songs-list">${albumsHTML}</div>`;
+}
+
+document.getElementById("load-top-albums").addEventListener("click", () => {
+  let accessToken = storedAccessToken;
+
+  if (!accessToken) {
+    accessToken = prompt("Enter your Spotify access token:");
+  }
+
+  if (accessToken) {
+    fetchTopAlbums(accessToken);
+  } else {
+    alert(
+      "Access token is required to fetch your top albums. Please authenticate first.",
+    );
+  }
+});
