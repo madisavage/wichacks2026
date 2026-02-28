@@ -273,11 +273,15 @@ app.post(
   express.raw({ type: "application/json" }),
   async (req, res) => {
     try {
+      // Get raw body as Buffer
+      const rawBody = req.body;
+
       // Verify webhook signature
       const signature = req.headers["x-hub-signature-256"];
       if (WEBHOOK_SECRET) {
         const hmac = crypto.createHmac("sha256", WEBHOOK_SECRET);
-        const digest = "sha256=" + hmac.update(req.body).digest("hex");
+        hmac.update(rawBody);
+        const digest = "sha256=" + hmac.digest("hex");
 
         if (signature !== digest) {
           console.error("Invalid webhook signature");
@@ -286,7 +290,7 @@ app.post(
       }
 
       // Parse the payload
-      const payload = JSON.parse(req.body.toString());
+      const payload = JSON.parse(rawBody.toString());
 
       // Check if this is a push event to the feature/oauth branch
       if (payload.ref === "refs/heads/feature/oauth") {
