@@ -20,7 +20,7 @@ app.use(express.static("public"));
 // Spotify API credentials
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI = `http://spotify.madisavage.gay/api/callback`;
+const REDIRECT_URI = `https://spotify.madisavage.gay/api/callback`;
 let accessToken = null;
 let tokenExpiration = null;
 
