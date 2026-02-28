@@ -3,6 +3,11 @@ import axios from "axios";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import crypto from "crypto";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 dotenv.config();
 
@@ -23,6 +28,9 @@ const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REDIRECT_URI = `https://spotify.madisavage.gay/api/callback`;
 let accessToken = null;
 let tokenExpiration = null;
+
+// GitHub webhook secret (set this in your .env file)
+const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET;
 
 //* Routes *//
 
@@ -258,6 +266,76 @@ app.get("/api/top-albums", async (req, res) => {
     });
   }
 });
+
+// GitHub webhook endpoint for auto-deployment
+app.post(
+  "/api/deploy",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    try {
+      // Verify webhook signature
+      const signature = req.headers["x-hub-signature-256"];
+      if (WEBHOOK_SECRET) {
+        const hmac = crypto.createHmac("sha256", WEBHOOK_SECRET);
+        const digest = "sha256=" + hmac.update(req.body).digest("hex");
+
+        if (signature !== digest) {
+          console.error("Invalid webhook signature");
+          return res.status(401).json({ error: "Invalid signature" });
+        }
+      }
+
+      // Parse the payload
+      const payload = JSON.parse(req.body.toString());
+
+      // Check if this is a push event to the feature/oauth branch
+      if (payload.ref === "refs/heads/feature/oauth") {
+        console.log("Received push event for feature/oauth branch");
+        console.log(`Commit: ${payload.head_commit?.message}`);
+
+        // Send immediate response
+        res.status(200).json({ message: "Deployment started" });
+
+        // Run deployment in the background
+        deployApp();
+      } else {
+        console.log(`Ignoring push to ${payload.ref}`);
+        res.status(200).json({ message: "Ignored: wrong branch" });
+      }
+    } catch (error) {
+      console.error("Webhook error:", error);
+      res.status(500).json({ error: "Deployment failed" });
+    }
+  },
+);
+
+// Deployment function
+async function deployApp() {
+  try {
+    console.log("Starting deployment...");
+
+    // Pull latest changes
+    console.log("Pulling latest changes from GitHub...");
+    const { stdout: pullOutput, stderr: pullError } = await execAsync(
+      "git pull origin feature/oauth",
+    );
+    console.log(pullOutput);
+    if (pullError) console.error(pullError);
+
+    // Install/update dependencies
+    console.log("Installing dependencies...");
+    const { stdout: npmOutput, stderr: npmError } =
+      await execAsync("npm install");
+    console.log(npmOutput);
+    if (npmError) console.error(npmError);
+
+    await execAsync("pm2 restart wichacks2026");
+
+    console.log("Deployment completed successfully!");
+  } catch (error) {
+    console.error("Deployment error:", error);
+  }
+}
 
 // Start server
 app.listen(PORT, () => {
