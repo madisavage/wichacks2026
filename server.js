@@ -20,13 +20,76 @@ app.use(express.static("public"));
 // Spotify API credentials
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+const REDIRECT_URI = `http://spotify.madisavage.gay/api/callback`;
 let accessToken = null;
 let tokenExpiration = null;
 
-//* Routes //
+//* Routes *//
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Initiate Spotify OAuth flow
+app.get("/api/authenticate", (req, res) => {
+  const scopes = ["user-top-read", "user-read-private", "user-read-email"].join(
+    " ",
+  );
+
+  const authUrl = `https://accounts.spotify.com/authorize?${new URLSearchParams(
+    {
+      response_type: "code",
+      client_id: CLIENT_ID,
+      scope: scopes,
+      redirect_uri: REDIRECT_URI,
+      show_dialog: true,
+    },
+  )}`;
+
+  res.redirect(authUrl);
+});
+
+// OAuth callback route
+app.get("/api/callback", async (req, res) => {
+  const code = req.query.code;
+  const error = req.query.error;
+
+  if (error) {
+    return res.redirect(`/?error=${error}`);
+  }
+
+  if (!code) {
+    return res.redirect("/?error=no_code");
+  }
+
+  try {
+    // Exchange authorization code for access token
+    const response = await axios.post(
+      "https://accounts.spotify.com/api/token",
+      new URLSearchParams({
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: REDIRECT_URI,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")}`,
+        },
+      },
+    );
+
+    const { access_token, refresh_token, expires_in } = response.data;
+
+    // Redirect back to the app with the access token
+    res.redirect(`/?access_token=${access_token}&expires_in=${expires_in}`);
+  } catch (error) {
+    console.error(
+      "Error exchanging code for token:",
+      error.response?.data || error.message,
+    );
+    res.redirect("/?error=token_exchange_failed");
+  }
 });
 
 // Get user's top songs
