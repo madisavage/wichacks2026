@@ -1,75 +1,77 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotingfy Game</title>
-    <script
-      src="https://unpkg.com/htmx.org@1.9.10"
-      integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <div class="container">
-      <main>
-        <section id="top-songs-section">
-          <h2>Your Top Songs</h2>
-          <button id="load-top-songs" class="btn-primary">
-            Load Top Songs
-          </button>
-          <div id="top-songs-container"></div>
-        </section>
-      </main>
 
-      <footer>
-        <p>Made with <span class="heart">♥</span></p>
-      </footer>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotingfy Game</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"
+    integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
 
-    <script>
-      async function fetchTopSongs(accessToken) {
-        const container = document.getElementById("top-songs-container");
-        const loadButton = document.getElementById("load-top-songs");
+<body>
+  <div class="container">
+    <main>
+      <section id="top-songs-section">
+        <h2>Your Top Songs</h2>
+        <button id="load-top-songs" class="btn-primary">
+          Load Top Songs
+        </button>
+        <div id="top-songs-container"></div>
+        <div id="connections-containers"></div>
+      </section>
+    </main>
 
-        // Show loading state
-        container.innerHTML =
-          '<p class="loading">Loading your top songs...</p>';
-        loadButton.disabled = true;
+    <footer>
+      <p>Made with <span class="heart">♥</span></p>
+    </footer>
+  </div>
 
-        try {
-          const response = await fetch(`/api/top-songs?token=${accessToken}`);
-          const data = await response.json();
+  <script>
+    async function fetchTopSongs(accessToken) {
+      const container = document.getElementById("top-songs-container");
+      const loadButton = document.getElementById("load-top-songs");
 
-          if (!response.ok) {
-            throw new Error(data.error || "Failed to fetch top songs");
-          }
+      // Show loading state
+      container.innerHTML =
+        '<p class="loading">Loading your top songs...</p>';
+      loadButton.disabled = true;
 
-          displayTopSongs(data.topSongs);
-        } catch (error) {
-          container.innerHTML = `
+      try {
+        const response = await fetch(`/api/top-songs?token=${accessToken}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to fetch top songs");
+        }
+
+        return data.topSongs;
+
+      } catch (error) {
+        container.innerHTML = `
                         <div class="error">
                             <p>❌ ${error.message}</p>
                             <p class="error-note">Note: To view your top songs, you need to authenticate with Spotify.</p>
                         </div>
                     `;
-        } finally {
-          loadButton.disabled = false;
-        }
+      } finally {
+        loadButton.disabled = false;
+      }
+    }
+
+    function displayTopSongs(songs) {
+      const container = document.getElementById("top-songs-container");
+
+      if (!songs || songs.length === 0) {
+        container.innerHTML = '<p class="no-data">No top songs found.</p>';
+        return;
       }
 
-      function displayTopSongs(songs) {
-        const container = document.getElementById("top-songs-container");
-
-        if (!songs || songs.length === 0) {
-          container.innerHTML = '<p class="no-data">No top songs found.</p>';
-          return;
-        }
-
-        const songsHTML = songs
-          .map(
-            (song) => `
+      const songsHTML = songs
+        .map(
+          (song) => `
                     <div class="song-item">
                         <div class="song-rank">#${song.rank}</div>
                         <div class="song-image">
@@ -86,32 +88,58 @@
                         </div>
                     </div>
                 `,
-          )
-          .join("");
+        )
+        .join("");
 
-        container.innerHTML = `<div class="songs-list">${songsHTML}</div>`;
+      container.innerHTML = `<div class="songs-list">${songsHTML}</div>`;
+    }
+
+    let currentAudio = null;
+    function playPreview(url) {
+      if (currentAudio) {
+        currentAudio.pause();
       }
+      currentAudio = new Audio(url);
+      currentAudio.play();
+    }
 
-      let currentAudio = null;
-      function playPreview(url) {
-        if (currentAudio) {
-          currentAudio.pause();
-        }
-        currentAudio = new Audio(url);
-        currentAudio.play();
+    async function loadSongHandler() {
+      const accessToken = prompt("Enter your Spotify access token:");
+
+      if (accessToken) {
+        topSongs = await fetchTopSongs(accessToken);
+        displayTopSongs(topSongs);
+      } else {
+        alert("Access token is required to fetch your top songs.");
       }
+    }
 
-      document
-        .getElementById("load-top-songs")
-        .addEventListener("click", () => {
-          const accessToken = prompt("Enter your Spotify access token:");
+    document
+      .getElementById("load-top-songs")
+      .addEventListener("click", () => loadSongHandler());
 
-          if (accessToken) {
-            fetchTopSongs(accessToken);
-          } else {
-            alert("Access token is required to fetch your top songs.");
-          }
-        });
-    </script>
-  </body>
+    // code specific to the connections game
+
+    function loadConnections() {
+
+      const container = document.getElementById("connections-containers");
+
+      let songs = fetchTopSongs(accessToken);
+
+      // grid of lyrics cards
+
+      // get 4 songs from the top (that have lyrics)
+      // get the lyrics
+      // pick 4 discrete chunks from the lyrics
+
+      // have a way to click max 4 tiles
+      // have a way to run select if 4 tiles are selected
+      // select checks if those 4 tiles are connected
+      // have some kind of variable map associated?
+      // shuffle option???
+
+    }
+  </script>
+</body>
+
 </html>
