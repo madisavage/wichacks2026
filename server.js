@@ -120,7 +120,7 @@ app.get("/api/top-songs", async (req, res) => {
           Authorization: `Bearer ${userAccessToken}`,
         },
         params: {
-          limit: 20,
+          limit: 30,
           time_range: "medium_term",
         },
       },
