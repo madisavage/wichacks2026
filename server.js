@@ -64,6 +64,7 @@ app.get("/api/top-songs", async (req, res) => {
       previewUrl: track.preview_url,
       spotifyUrl: track.external_urls.spotify,
       duration: Math.floor(track.duration_ms / 1000),
+      id: track.id
     }));
 
     res.json({ topSongs });
@@ -74,6 +75,45 @@ app.get("/api/top-songs", async (req, res) => {
     );
     res.status(error.response?.status || 500).json({
       error: "Failed to fetch top songs",
+      details: error.response?.data?.error?.message || error.message,
+    });
+  }
+});
+
+app.get("/api/connections-info", async (req, res) => {
+  try {
+    const userAccessToken =
+      req.query.token || req.headers.authorization?.split(" ")[1];
+
+    const songId = req.query.songId;
+
+    if (!userAccessToken) {
+      return res.status(401).json({
+        error: "No access token provided. User authentication required.",
+      });
+    }
+
+    // Fetch song info from Spotify API
+    const response = await axios.get(
+      `https://api.spotify.com/v1/tracks/${songId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${userAccessToken}`,
+        },
+        params: {
+          id: songId
+        },
+      },
+    );
+    console.log(response)
+    res.json({ response });
+  } catch (error) {
+    console.error(
+      "Error fetching song info:",
+      error.response?.data || error.message,
+    );
+    res.status(error.response?.status || 500).json({
+      error: "Failed to fetch song info",
       details: error.response?.data?.error?.message || error.message,
     });
   }

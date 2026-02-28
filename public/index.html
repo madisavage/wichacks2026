@@ -20,6 +20,9 @@
           Load Top Songs
         </button>
         <div id="top-songs-container"></div>
+        <button id="load-connections" class="btn-primary">
+          Load Connectunes
+        </button>
         <div id="connections-containers"></div>
       </section>
     </main>
@@ -71,12 +74,14 @@
 
       const songsHTML = songs
         .map(
+          // can put these back later:
+          // <div class="song-image">
+        //     <img src="${song.albumImage}" alt="${song.album}">
+        // </div>
           (song) => `
                     <div class="song-item">
                         <div class="song-rank">#${song.rank}</div>
-                        <div class="song-image">
-                            <img src="${song.albumImage}" alt="${song.album}">
-                        </div>
+                        
                         <div class="song-info">
                             <h3 class="song-name">${song.name}</h3>
                             <p class="song-artist">${song.artist}</p>
@@ -118,25 +123,62 @@
       .getElementById("load-top-songs")
       .addEventListener("click", () => loadSongHandler());
 
+    document
+      .getElementById("load-connections")
+      .addEventListener("click", () => loadConnections());
+
     // code specific to the connections game
+    async function fetchSongInfo(accessToken, id) {
+      const container = document.getElementById("top-songs-container");
+      
+      try {
+        console.log('going to call info with: ', id)
+        const response = await fetch(`/api/connections-info?token=${accessToken} songId=${id}`);
+        const data = await response.json();
+        console.log(data)
 
-    function loadConnections() {
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to fetch top songs");
+        }
 
-      const container = document.getElementById("connections-containers");
+        return data;
 
-      let songs = fetchTopSongs(accessToken);
+      } catch (error) {
+        container.innerHTML = `
+                        <div class="error">
+                            <p>❌ ${error.message}</p>
+                            <p class="error-note">Note: To view your top songs, you need to authenticate with Spotify.</p>
+                        </div>
+                    `;
+      }
+    }
 
-      // grid of lyrics cards
+    async function loadConnections() {
+      const accessToken = prompt("Enter your Spotify access token:");
+      if (accessToken) {
+        let topSongs = await fetchTopSongs(accessToken);
+        console.log(topSongs);
+        const container = document.getElementById("connections-containers");
+        
+        // get 4 songs from the top (that have lyrics)
+        // get the lyrics
+        // pick 4 discrete chunks from the lyrics
+        let songInfoMap = await Promise.all(topSongs.map( (song) => {
+          let songInfo = fetchSongInfo(accessToken, song.id);
+          console.log(song)
+        }));
 
-      // get 4 songs from the top (that have lyrics)
-      // get the lyrics
-      // pick 4 discrete chunks from the lyrics
+        // songInfoMap.forEach((song) => alert(song))
 
-      // have a way to click max 4 tiles
-      // have a way to run select if 4 tiles are selected
-      // select checks if those 4 tiles are connected
-      // have some kind of variable map associated?
-      // shuffle option???
+
+        // have a way to click max 4 tiles
+        // have a way to run select if 4 tiles are selected
+        // select checks if those 4 tiles are connected
+        // have some kind of variable map associated?
+        // shuffle option???
+      } else {
+        alert("Access token is required to fetch your top songs.");
+      }
 
     }
   </script>
