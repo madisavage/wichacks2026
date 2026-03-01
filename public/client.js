@@ -294,26 +294,30 @@ document.getElementById("load-connections").addEventListener("click", () => {
   loadConnections();
 });
 
+document.getElementById("connections-guess").addEventListener("click", () => {
+  makeGuess();
+});
+
 // should add a check for has lyrics before it returns
 function getRandomSong(songs) {
   return songs[Math.floor(Math.random() * songs.length)];
 }
 
+let selected = new Set();
+let validSets = [new Set(), new Set(), new Set(), new Set() ];
+let guessesLeft = 5;
+
 async function loadConnections() {
   const accessToken = prompt("Enter your Spotify access token:");
   if (accessToken) {
     let topSongs = await fetchTopSongs(accessToken);
-    console.log(topSongs);
 
     // display the grid and controls
     hideAllExcept('connections-container');
 
-
     // get 4 songs from the top (that have lyrics)
     // get the lyrics
     // pick 4 discrete chunks from the lyrics
-    topSongs.forEach((song) => console.log(song));
-
     let song1 = getRandomSong(topSongs);
     let song2 = getRandomSong(topSongs);
     let song3 = getRandomSong(topSongs);
@@ -321,21 +325,63 @@ async function loadConnections() {
 
     let usedSongs = [song1, song2, song3, song4];
 
+    let i = 1;
     let lyrics = usedSongs.map((song) => {
-      console.log("get lyrics for", song);
+      // console.log("get lyrics for", song);
+      // validSets.i.add();
       // should map to song index or something to keep them grouped?
     });
 
-    // have a way to click max 4 tiles
-    // have a way to run select if 4 tiles are selected
+    // have a way to click max 4 tiles - done
+    // have a way to run select if 4 tiles are selected - done
     // select checks if those 4 tiles are connected
     // have some kind of variable map associated?
-    // shuffle option???
+    // shuffle option??? - no
   } else {
     alert("Access token is required to fetch your top songs.");
   }
 }
 
 function select(tileId) {
-  console.log("clicking button ", tileId);
+  let tile = document.getElementById("tile-" + tileId);
+  if (selected.has(tileId)) {
+    selected.delete(tileId);
+    tile.className = 'connections-tile';
+  }
+
+  else {
+    if (selected.size < 4) {
+      selected.add(tileId);
+      tile.className = 'connections-tile selected';
+    }
+  }
+}
+
+function addResultSet(index) {
+  let section = document.getElementById('results');
+
+  let htmlString = '';
+  validSets.index.map((lyricString) => {
+    htmlString += '<div class="result-tile">' + lyricString + '</div> '
+  });
+
+  section.innerHTML = htmlString;
+}
+
+function makeGuess() {
+  if (selected.size < 4){
+    console.log('not enough selected')
+    return;
+  }
+  let success = false;
+  for (const set in validSets){
+    if (selected.difference(set).size == 0){
+      console.log('set found');
+      success = true;
+    }
+  }
+  if (!success) {
+    guessesLeft --;
+  }
+  addResultSet(1);
 }
