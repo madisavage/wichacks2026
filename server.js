@@ -35,6 +35,10 @@ const DEV_TOKEN = process.env.SPOTIFY_DEV_TOKEN;
 // GitHub webhook secret (set this in your .env file)
 const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET;
 
+let maxAlbums = 50;
+let maxSongs = 50;
+let maxArtists = 50;
+
 //* Routes *//
 
 app.get("/", (req, res) => {
@@ -132,7 +136,7 @@ app.get("/api/top-songs", async (req, res) => {
           Authorization: `Bearer ${userAccessToken}`,
         },
         params: {
-          limit: 25,
+          limit: maxSongs,
           time_range: "medium_term",
         },
       },
@@ -183,7 +187,7 @@ app.get("/api/top-artists", async (req, res) => {
           Authorization: `Bearer ${userAccessToken}`,
         },
         params: {
-          limit: 20,
+          limit: maxArtists,
           time_range: "medium_term",
         },
       },
@@ -232,7 +236,7 @@ app.get("/api/top-albums", async (req, res) => {
           Authorization: `Bearer ${userAccessToken}`,
         },
         params: {
-          limit: 50,
+          limit: maxAlbums,
           time_range: "medium_term",
         },
       },
@@ -261,7 +265,7 @@ app.get("/api/top-albums", async (req, res) => {
     // Sort by count and add rank
     const topAlbums = Array.from(albumMap.values())
       .sort((a, b) => b.count - a.count)
-      .slice(0, 20)
+      .slice(0, maxAlbums)
       .map((album, index) => ({
         rank: index + 1,
         ...album,

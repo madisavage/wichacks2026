@@ -1,3 +1,6 @@
+//* Global variables *//
+let topSongs = null;
+
 //* AUTHENTICATION *//
 let storedAccessToken = null;
 
@@ -56,6 +59,7 @@ function hideAllExcept(targetId) {
     "top-artists-container",
     "top-albums-container",
     "connections-container",
+    "highlow-container",
   ];
   contentIds.map((id) => {
     if (id != targetId) {
@@ -96,7 +100,6 @@ async function fetchTopSongs(accessToken) {
       throw new Error(data.error || "Failed to fetch top songs");
     }
 
-    // displayTopSongs(data.topSongs);
     return data.topSongs;
   } catch (error) {
     container.innerHTML = `
@@ -141,19 +144,19 @@ function displayTopSongs(songs) {
   const songsHTML = songs
     .map(
       (song) => `
-            <div class="song-item">
-                <div class="song-rank">#${song.rank}</div>
-                <div class="song-image">
+            <div class="song-item card card-hover-scale">
+                <div class="rank-badge">#${song.rank}</div>
+                <div class="image-thumbnail">
                     <img src="${song.albumImage}" alt="${song.album}">
                 </div>
-                <div class="song-info">
-                    <h3 class="song-name">${song.name}</h3>
-                    <p class="song-artist">${song.artist}</p>
-                    <p class="song-album">${song.album}</p>
+                <div class="info-container">
+                    <h3 class="text-title-ellipsis">${song.name}</h3>
+                    <p class="text-subtitle">${song.artist}</p>
+                    <p class="text-detail">${song.album}</p>
                 </div>
                 <div class="song-actions">
-                    ${song.previewUrl ? `<button class="btn-play" onclick="playPreview('${song.previewUrl}')">▶ Preview</button>` : ""}
-                    <a href="${song.spotifyUrl}" target="_blank" class="btn-spotify">Open in Spotify</a>
+                    ${song.previewUrl ? `<button class="btn-play btn-base btn-primary-color btn-hover-scale" onclick="playPreview('${song.previewUrl}')">▶ Preview</button>` : ""}
+                    <a href="${song.spotifyUrl}" target="_blank" class="btn-spotify btn-base btn-dark btn-hover-scale">Open in Spotify</a>
                 </div>
             </div>
         `,
@@ -228,18 +231,18 @@ function displayTopArtists(artists) {
   const artistsHTML = artists
     .map(
       (artist) => `
-            <div class="song-item">
-                <div class="song-rank">#${artist.rank}</div>
-                <div class="song-image">
+            <div class="song-item card card-hover-scale">
+                <div class="rank-badge">#${artist.rank}</div>
+                <div class="image-thumbnail">
                     <img src="${artist.image}" alt="${artist.name}">
                 </div>
-                <div class="song-info">
-                    <h3 class="song-name">${artist.name}</h3>
-                    <p class="song-artist">${artist.genres || "No genres listed"}</p>
-                    <p class="song-album">Popularity: ${artist.popularity}/100 • ${artist.followers.toLocaleString()} followers</p>
+                <div class="song-info info-container">
+                    <h3 class="text-title-ellipsis">${artist.name}</h3>
+                    <p class="text-subtitle">${artist.genres || "No genres listed"}</p>
+                    <p class="text-detail">Popularity: ${artist.popularity}/100 • ${artist.followers.toLocaleString()} followers</p>
                 </div>
                 <div class="song-actions">
-                    <a href="${artist.spotifyUrl}" target="_blank" class="btn-spotify">Open in Spotify</a>
+                    <a href="${artist.spotifyUrl}" target="_blank" class="btn-spotify btn-base btn-dark btn-hover-scale">Open in Spotify</a>
                 </div>
             </div>
         `,
@@ -305,18 +308,18 @@ function displayTopAlbums(albums) {
   const albumsHTML = albums
     .map(
       (album) => `
-            <div class="song-item">
-                <div class="song-rank">#${album.rank}</div>
-                <div class="song-image">
+            <div class="song-item card card-hover-scale">
+                <div class="rank-badge">#${album.rank}</div>
+                <div class="image-thumbnail">
                     <img src="${album.image}" alt="${album.name}">
                 </div>
-                <div class="song-info">
-                    <h3 class="song-name">${album.name}</h3>
-                    <p class="song-artist">${album.artist}</p>
-                    <p class="song-album">${album.totalTracks} tracks • Released: ${album.releaseDate}</p>
+                <div class="song-info info-container">
+                    <h3 class="text-title-ellipsis">${album.name}</h3>
+                    <p class="text-subtitle">${album.artist}</p>
+                    <p class="text-detail">${album.totalTracks} tracks • Released: ${album.releaseDate}</p>
                 </div>
                 <div class="song-actions">
-                    <a href="${album.spotifyUrl}" target="_blank" class="btn-spotify">Open in Spotify</a>
+                    <a href="${album.spotifyUrl}" target="_blank" class="btn-spotify btn-base btn-dark btn-hover-scale">Open in Spotify</a>
                 </div>
             </div>
         `,
@@ -466,3 +469,173 @@ function makeGuess() {
     selected = new Set();
   }
 }
+
+//* HIGH LOW GAME *//
+let highLowSongs = [];
+let currentSongIndex;
+let nextSongIndex;
+let highLowScore;
+let gameActive = false;
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+async function initializeHighLowGame() {
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
+  }
+
+  if (!topSongs || topSongs.length === 0) {
+    topSongs = await fetchTopSongs(storedAccessToken);
+  }
+
+  if (!topSongs || topSongs.length < 2) {
+    alert("Not enough top songs to play High Low! Are you authenticated?");
+    return;
+  }
+
+  highLowSongs = [...topSongs];
+  shuffleArray(highLowSongs);
+  currentSongIndex = 0;
+  nextSongIndex = 1;
+  highLowScore = 0;
+  gameActive = true;
+
+  updateHighLowDisplay();
+  document.getElementById("score").textContent = highLowScore;
+  document.getElementById("highlow-message").textContent = "";
+  const highLowMessageEl = document.getElementById("highlow-message");
+  highLowMessageEl.textContent = "";
+  highLowMessageEl.classList.remove("correct", "wrong");
+  highLowMessageEl.style.display = "";
+  document.getElementById("start-highlow").style.display = "none";
+  document.getElementById("highlow-controls").style.display = "flex";
+}
+
+function updateHighLowDisplay() {
+  const currentSong = highLowSongs[currentSongIndex];
+  const nextSong = highLowSongs[nextSongIndex];
+
+  // Update current card
+  document.getElementById("current-rank").textContent = currentSong.rank;
+  document.getElementById("current-image").src = currentSong.albumImage;
+  document.getElementById("current-name").textContent = currentSong.name;
+  document.getElementById("current-artist").textContent = currentSong.artist;
+
+  // Update next card (hide rank initially)
+  document.getElementById("next-rank").textContent = "?";
+  document.getElementById("next-image").src = nextSong.albumImage;
+  document.getElementById("next-name").textContent = nextSong.name;
+  document.getElementById("next-artist").textContent = nextSong.artist;
+
+  document.getElementById("next-song-name").textContent = nextSong.name;
+}
+
+function makeHighLowGuess(isHigher) {
+  if (!gameActive) return;
+
+  const currentSong = highLowSongs[currentSongIndex];
+  const nextSong = highLowSongs[nextSongIndex];
+
+  // Reveal the next song's rank
+  document.getElementById("next-rank").textContent = nextSong.rank;
+
+  let correct = false;
+  if (isHigher && nextSong.rank < currentSong.rank) {
+    correct = true;
+  } else if (!isHigher && nextSong.rank > currentSong.rank) {
+    correct = true;
+  }
+
+  const messageEl = document.getElementById("highlow-message");
+
+  if (correct) {
+    highLowScore++;
+    document.getElementById("score").textContent = highLowScore;
+    messageEl.textContent = "✅ Correct!";
+    messageEl.className = "highlow-message correct";
+
+    // Show loading animation and move to next pair
+    setTimeout(() => {
+      // Hide controls and message, show spinner
+      document.getElementById("highlow-controls").style.display = "none";
+      messageEl.style.display = "none";
+      document.getElementById("highlow-loading").style.display = "flex";
+
+      // Add fade out animation to current card
+      document.getElementById("current-card").classList.add("fade-out");
+
+      setTimeout(() => {
+        currentSongIndex = nextSongIndex;
+        nextSongIndex++;
+
+        if (nextSongIndex >= highLowSongs.length) {
+          document.getElementById("highlow-loading").style.display = "none";
+          messageEl.style.display = "block";
+          endHighLow(true);
+        } else {
+          // Hide spinner and update display
+          setTimeout(() => {
+            document.getElementById("highlow-loading").style.display = "none";
+            document
+              .getElementById("current-card")
+              .classList.remove("fade-out");
+            document.getElementById("current-card").classList.add("fade-in");
+
+            updateHighLowDisplay();
+
+            // Remove animation class after it completes
+            setTimeout(() => {
+              document
+                .getElementById("current-card")
+                .classList.remove("fade-in");
+            }, 500);
+
+            messageEl.textContent = "";
+            messageEl.style.display = "block";
+            document.getElementById("highlow-controls").style.display = "flex";
+          }, 250);
+        }
+      }, 100);
+    }, 250);
+  } else {
+    messageEl.textContent = `❌ Wrong! Final Score: ${highLowScore}`;
+    messageEl.className = "highlow-message wrong";
+    endHighLow(false);
+  }
+}
+
+function endHighLow(completed) {
+  gameActive = false;
+  document.getElementById("highlow-controls").style.display = "none";
+  document.getElementById("start-highlow").style.display = "block";
+
+  if (completed) {
+    document.getElementById("highlow-message").textContent =
+      `🎉 You completed all songs! Final Score: ${highLowScore}`;
+  }
+}
+
+function loadHighLow() {
+  hideAllExcept("highlow-container");
+  resetSelectedButtons("load-highlow");
+  initializeHighLowGame();
+}
+
+document
+  .getElementById("load-highlow")
+  .addEventListener("click", () => loadHighLow());
+document
+  .getElementById("start-highlow")
+  .addEventListener("click", () => initializeHighLowGame());
+document
+  .getElementById("guess-higher")
+  .addEventListener("click", () => makeHighLowGuess(true));
+document
+  .getElementById("guess-lower")
+  .addEventListener("click", () => makeHighLowGuess(false));

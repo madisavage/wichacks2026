@@ -91,19 +91,19 @@
   background-color: var(--color-background-white);
 }
 
-/* Lists Styling */
-.songs-list {
+.container-centered {
   max-width: 75rem;
   margin: 0 auto;
   padding: 2rem;
 }
 
-.song-item {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.25rem;
-  margin-bottom: 1.25rem;
+.container-medium {
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+/* Reusable Card Styles */
+.card {
   background-color: var(--color-background-bright);
   border-radius: 1rem;
   box-shadow: 0 0.1875rem 0.75rem var(--shadow-light);
@@ -112,33 +112,48 @@
     box-shadow 0.2s;
 }
 
-.song-item:hover {
+.card-white {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 1rem var(--shadow-light);
+}
+
+.card-hover:hover {
   transform: translateY(-0.125rem);
+  box-shadow: 0 0.3125rem 1rem var(--shadow-medium);
+}
+
+.card-hover-scale:hover {
   transform: scale(1.02);
   box-shadow: 0 0.3125rem 1rem var(--shadow-medium);
 }
 
-.song-rank {
+.rank-badge {
   font-size: 2rem;
   font-weight: bold;
   color: var(--color-text-primary);
-
   min-width: 3rem;
   text-align: center;
 }
 
-.song-image {
+.rank-badge-primary {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.image-thumbnail {
   flex-shrink: 0;
 }
 
-.song-image:hover {
+.image-thumbnail:hover {
   transform: scale(2.5);
   transition: transform 0.3s ease;
   z-index: 10;
   position: relative;
 }
 
-.song-image img {
+.image-thumbnail img {
   width: 6.625rem;
   height: 6.625rem;
   border-radius: 0.75rem;
@@ -146,13 +161,25 @@
   box-shadow: 0 0.1875rem 0.3125rem var(--shadow-dark);
 }
 
-.song-info {
+.image-square {
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.info-container {
   flex-grow: 1;
   text-align: left;
   min-width: 0;
 }
 
-.song-name {
+.text-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.4375rem 0;
+  color: var(--color-text-primary);
+}
+
+.text-title-ellipsis {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 0.4375rem 0;
@@ -162,27 +189,19 @@
   text-overflow: ellipsis;
 }
 
-.song-artist {
+.text-subtitle {
   font-size: 1.25rem;
   color: var(--color-text-secondary);
   margin: 0 0 0.25rem 0;
 }
 
-.song-album {
+.text-detail {
   font-size: 1rem;
   color: var(--color-text-tertiary);
   margin: 0;
 }
 
-.song-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  flex-shrink: 0;
-}
-
-.btn-play,
-.btn-spotify {
+.btn-base {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 1.5rem;
@@ -195,25 +214,77 @@
   white-space: nowrap;
 }
 
-.btn-play {
+.btn-large {
+  padding: 1rem 3rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0.25rem 0.75rem var(--shadow-light);
+}
+
+.btn-primary-color {
   background-color: var(--color-primary);
   color: white;
 }
 
-.btn-play:hover {
+.btn-primary-color:hover {
   background-color: var(--color-primary-hover);
-  transform: scale(1.05);
 }
 
-.btn-spotify {
+.btn-error-color {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.btn-error-color:hover {
+  background-color: #c91a29;
+}
+
+.btn-dark {
   background-color: var(--color-spotify-black);
   color: white;
-  display: inline-block;
 }
 
-.btn-spotify:hover {
+.btn-dark:hover {
   background-color: var(--color-spotify-dark-gray);
+}
+
+.btn-hover-lift:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.375rem 1rem var(--shadow-medium);
+}
+
+.btn-hover-scale:hover {
   transform: scale(1.05);
+}
+
+.songs-list {
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.song-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.btn-play,
+.btn-spotify {
+  display: inline-block;
 }
 
 /* Loading and Error States */
@@ -355,4 +426,151 @@
 
 button {
   word-wrap: break-word;
+}
+
+#highlow-container {
+  background-color: var(--color-background-white);
+  padding: 2rem;
+}
+
+#highlow-info {
+  margin-bottom: 2rem;
+}
+
+#highlow-info p {
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
+  margin: 0.5rem 0;
+}
+
+#highlow-score {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+#highlow-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.highlow-card {
+  padding: 1.5rem;
+  width: 250px;
+  text-align: center;
+}
+
+.highlow-card img {
+  width: 200px;
+  height: 200px;
+  margin: 1rem 0;
+}
+
+.highlow-vs {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--color-text-accent);
+}
+
+#highlow-controls {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+#highlow-message {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 1rem 0;
+  min-height: 2rem;
+}
+
+#highlow-message.correct {
+  color: var(--color-success);
+}
+
+#highlow-message.wrong {
+  color: var(--color-error);
+}
+
+#start-highlow {
+  margin: 2rem auto;
+  display: block;
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+}
+
+/* Loading Spinner Animation */
+.highlow-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  min-height: 100px;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid var(--color-background-bright);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Card transition animations */
+.highlow-card.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+.highlow-card.fade-in {
+  animation: fadeIn 0.5s ease-in forwards;
+}
+
+.highlow-card.slide-left {
+  animation: slideLeft 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
 }
