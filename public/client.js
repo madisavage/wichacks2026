@@ -129,7 +129,7 @@ function displayTopSongs(songs) {
     )
     .join("");
 
-  container.innerHTML = `<div class="songs-list">${songsHTML}</div>`;
+  container.innerHTML = `<h1 class="content-title">Your Top Songs</h1><div class="songs-list">${songsHTML}</div>`;
 }
 
 let currentAudio = null;
@@ -214,7 +214,7 @@ function displayTopArtists(artists) {
     )
     .join("");
 
-  container.innerHTML = `<div class="songs-list">${artistsHTML}</div>`;
+  container.innerHTML = `<h1 class="content-title">Your Top Artists</h1><div class="songs-list">${artistsHTML}</div>`;
 }
 
 async function loadTopArtists() {
@@ -290,7 +290,7 @@ function displayTopAlbums(albums) {
     )
     .join("");
 
-  container.innerHTML = `<div class="songs-list">${albumsHTML}</div>`;
+  container.innerHTML = `<h1 class="content-title">Your Top Albums</h1><div class="songs-list">${albumsHTML}</div>`;
 }
 
 async function loadTopAlbums() {
