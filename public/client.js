@@ -304,7 +304,7 @@ function getRandomSong(songs) {
 }
 
 let selected = new Set();
-let validSets = [new Set(), new Set(), new Set(), new Set() ];
+let validSets = [new Set(), new Set(), new Set(), new Set()];
 let guessesLeft = 5;
 
 async function loadConnections() {
@@ -369,19 +369,27 @@ function addResultSet(index) {
 }
 
 function makeGuess() {
-  if (selected.size < 4){
+  if (guessesLeft < 1){
+    console.log('out of guesses!');
+    return;
+  }
+  if (selected.size < 4) {
     console.log('not enough selected')
     return;
   }
-  let success = false;
-  for (const set in validSets){
-    if (selected.difference(set).size == 0){
+  let index = -1;
+  for (const set in validSets) {
+    console.log(set, validSets[set])
+    console.log(selected)
+    if (selected.difference(validSets[set]).size == 0) {
       console.log('set found');
-      success = true;
+      index = set;
     }
   }
-  if (!success) {
-    guessesLeft --;
+  if (index == -1) {
+    guessesLeft--;
+    document.getElementById('guesses-left').innerHTML = guessesLeft;
+  } else {
+    addResultSet(index);
   }
-  addResultSet(1);
 }
