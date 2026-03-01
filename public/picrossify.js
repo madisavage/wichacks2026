@@ -33,13 +33,17 @@ class RGBPixel {
         return new RGBPixel(Math.max(0, Math.min(Math.round(rPrime * 255), 255)), Math.max(0, Math.min(Math.round(gPrime * 255), 255)), Math.max(0, Math.min(Math.round(bPrime * 255), 255)));
     }
 
+    toString() {
+        return "#" + this.red.toString(16) + this.green.toString(16) + this.blue.toString(16);
+    }
+
     style() { 
         return `
             border: 1x solid black;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #${this.red.toString(16) + this.green.toString(16) + this.blue.toString(16)};
+            background-color: ${this.toString()};
         `;
     }
 
@@ -147,6 +151,8 @@ class PixelImage {
     // then splits up the corresponding color into "buckets" of supposedly similar colors.
     // An improvement would be to use an algorithm that makes the color categories dependent
     // on the album's color palette instead of assuming a universal color palette.
+    // The function modifes the underlying data of the image to be the picrossified version
+    // and returns the array of colors representing the palette used in the result.
     picrossify(newWidth, newHeight) {
         let newPixels = [];
         const rowOffset = this.height / (2 * newHeight);
@@ -241,6 +247,7 @@ class PixelImage {
                 }
             }
         }
+        let palette = [];
         for (let i = 0; i < colorBuckets.length; ++i) {
             const bucket = colorBuckets[i];
             if (bucket.length > 0) {
@@ -258,45 +265,12 @@ class PixelImage {
                     const pixelRef = bucket[i];
                     newPixels[pixelRef.row][pixelRef.col] = avgPixel;
                 }
+                palette.push(RGBPixel.fromCIELABPixel(avgPixel).toString());
             }
         }
-        return new PixelImage(newPixels.map((row) => row.map((cielabPixel) => RGBPixel.fromCIELABPixel(cielabPixel))), newWidth, newHeight);
+        this.pixels = newPixels.map((row) => row.map((cielabPixel) => RGBPixel.fromCIELABPixel(cielabPixel)));
+        this.height = newHeight;
+        this.width = newWidth;
+        return palette;
     }
-}
-
-function picrossify(imageUrl) {
-    const image = new Image();
-    image.crossOrigin = "Anonymous";
-    image.onload = function () {
-        /*
-        const canvas = document.getElementById('album-canvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = image.width;
-        canvas.height = image.height;
-
-        ctx.drawImage(image, 0, 0);
-
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-        let pixelImage = PixelImage.fromImageData(imageData, image.width, image.height);
-
-        pixelImage.picrossify(40, 40);
-
-        document.getElementById("picross-container").innerHTML += pixelImage.toHtml();
-        */
-
-        // The basics for getting the pixel data from an image are as follows:
-        // A canvas needs to exist in the html.
-        // We get the 2d context of the canvas,
-        // set the canvas width and height to be the height of the image,
-        // and then draw the image on the context.
-        // It is necessary to do this so taht the image data has been loaded when we try and get the image data.
-        // The image data is an array of unsigned 8 bit integers, every 4 of which represent a pixel.
-        // The PixelImage.fromImageData() returns a PixelImage object from this array.
-        // The PixelImage class should be transformed into the logic for the color by number game in the future.
-        // Right now calling the toHtml() method on a pixel image returns a literal grid of colors representing
-        // what the finished color by number game should look like.
-    }
-    image.src = imageUrl;
 }

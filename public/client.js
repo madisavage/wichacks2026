@@ -475,18 +475,70 @@ document.getElementById("load-coloring").addEventListener("click", () => {
 
 function getRandomCover(albums) {
   const album = albums[Math.floor(Math.random() * albums.length)];
-  return album.image;
+  return album.albumImage;
 }
 
 async function loadColoring() {
+  const DIMENSION = 20;
+
   if (!storedAccessToken) {
     alert("Please authenticate with Spotify first!");
     return;
   }
   let topAlbums = await fetchTopSongs(storedAccessToken);
 
-  hideAllExcept("connections-container");
-  resetSelectedButtons('load-connections');
+  hideAllExcept("coloring-container");
+  resetSelectedButtons('load-coloring');
 
-  let image = getRandomCover(topAlbums);
+  const image = new Image();
+  image.crossOrigin = "Anonymous";
+  image.onload = function() {
+      const grid = document.getElementById('grid');
+      if (grid.childNodes.length === 0) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        ctx.drawImage(image, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+        const solutionImage = PixelImage.fromImageData(imageData, image.width, image.height)
+        
+        // Modifies the solutionImage in place to contain the finished result data and returns the
+        // color palette used.
+        const palette = solutionImage.picrossify(DIMENSION, DIMENSION);
+
+        
+        const colorPicker = document.getElementById('colorPicker');
+        const GRID_SIZE = 20; // Hardcoding to 20 for now.
+
+        grid.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(${GRID_SIZE}, 1fr)`;
+
+        for (let i = 0; i < GRID_SIZE * GRID_SIZE; ++i) {
+          const cell = document.createElement('div');
+          cell.classList.add('cover-by-number-grid-cell');
+
+          cell.addEventListener('click', function() {
+            cell.style.backgroundColor = colorPicker.value;
+          });
+
+          cell.addEventListener('mouseover', function(event) {
+            if (event.buttons === 1) {
+              cell.style.backgroundColor = colorPicker.value;
+            }
+          });
+
+          grid.appendChild(cell);
+        }
+      }
+  };
+  image.src = getRandomCover(topAlbums);
+}
+
+function checkCoverByNumberGrid() {
+
 }

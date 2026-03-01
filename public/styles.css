@@ -319,3 +319,32 @@
 button{
     word-wrap: break-word;
 }
+
+.grid-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cover-by-number-grid {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    width: 400px;
+    height: 400px;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.cover-by-number-grid-cell {
+    border: 1px lightgray;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    display: flex;
+    cursor: pointer;
+}
+
+.cover-by-number-grid-cell:hover {
+    opacity: 0.7;
+}

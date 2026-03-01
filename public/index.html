@@ -77,14 +77,23 @@
         <div class="result-tile num-3">' + lyricString + '</div>
       </div>
     </div>
-    <div id="coloring-container" style="display: none;"></div>
+    <div id="coloring-container" style="display: none; align-items: center; justify-content: center;">
+      <div class="grid-container">
+        <div id="grid" class="cover-by-number-grid"></div>
+      </div>
+      <div class="controls">
+        <label for="colorPicker">Choose Color:</label>
+        <input type="color" id="colorPicker" value="#0000ff">
+      </div>
+      <button id="cover-by-number-check-solution-button" onclick="checkCoverByNumberGrid()">Check solution</button>
+    </div>
   </div>
   </main>
 
   <footer>
     <p>Made with <span class="heart">♥</span></p>
   </footer>
-
+  <script src="picrossify.js"></script>
   <script src="/client.js"></script>
 </body>
 
