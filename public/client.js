@@ -31,15 +31,21 @@ document.getElementById("auth-button").addEventListener("click", () => {
 
 //* DISPLAY HELPERS *//
 function hideAllExcept(targetId) {
-  contentIds = ['placeholder', 'auth-status', 'top-songs-container', 'top-artists-container', 'top-albums-container', 'connections-container']
+  contentIds = [
+    "placeholder",
+    "auth-status",
+    "top-songs-container",
+    "top-artists-container",
+    "top-albums-container",
+    "connections-container",
+  ];
   contentIds.map((id) => {
     if (id != targetId) {
       const container = document.getElementById(id);
-      container.style.display = 'none';
-    }
-    else {
+      container.style.display = "none";
+    } else {
       const container = document.getElementById(id);
-      container.style.display = 'block';
+      container.style.display = "block";
     }
   });
 }
@@ -118,15 +124,14 @@ function playPreview(url) {
 }
 
 async function loadTopSongs() {
-  const accessToken = prompt("Enter your Spotify access token:");
-
-  if (accessToken) {
-    topSongs = await fetchTopSongs(accessToken);
-    displayTopSongs(topSongs);
-    hideAllExcept('top-songs-container');
-  } else {
-    alert("Access token is required to fetch your top songs.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+
+  topSongs = await fetchTopSongs(storedAccessToken);
+  displayTopSongs(topSongs);
+  hideAllExcept("top-songs-container");
 }
 
 document
@@ -195,16 +200,14 @@ function displayTopArtists(artists) {
 }
 
 async function loadTopArtists() {
-  const accessToken = prompt("Enter your Spotify access token:");
-
-  if (accessToken) {
-    topArtists = await fetchTopArtists(accessToken);
-    displayTopArtists(topArtists);
-    hideAllExcept('top-artists-container');
-
-  } else {
-    alert("Access token is required to fetch your top artists.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+
+  topArtists = await fetchTopArtists(storedAccessToken);
+  displayTopArtists(topArtists);
+  hideAllExcept("top-artists-container");
 }
 
 document
@@ -273,16 +276,14 @@ function displayTopAlbums(albums) {
 }
 
 async function loadTopAlbums() {
-  const accessToken = prompt("Enter your Spotify access token:");
-
-  if (accessToken) {
-    topAlbums = await fetchTopAlbums(accessToken);
-    displayTopAlbums(topAlbums);
-    hideAllExcept('top-albums-container');
-
-  } else {
-    alert("Access token is required to fetch your top albums.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+
+  topAlbums = await fetchTopAlbums(storedAccessToken);
+  displayTopAlbums(topAlbums);
+  hideAllExcept("top-albums-container");
 }
 
 document
@@ -300,40 +301,39 @@ function getRandomSong(songs) {
 }
 
 async function loadConnections() {
-  const accessToken = prompt("Enter your Spotify access token:");
-  if (accessToken) {
-    let topSongs = await fetchTopSongs(accessToken);
-    console.log(topSongs);
-
-    // display the grid and controls
-    hideAllExcept('connections-container');
-
-
-    // get 4 songs from the top (that have lyrics)
-    // get the lyrics
-    // pick 4 discrete chunks from the lyrics
-    topSongs.forEach((song) => console.log(song));
-
-    let song1 = getRandomSong(topSongs);
-    let song2 = getRandomSong(topSongs);
-    let song3 = getRandomSong(topSongs);
-    let song4 = getRandomSong(topSongs);
-
-    let usedSongs = [song1, song2, song3, song4];
-
-    let lyrics = usedSongs.map((song) => {
-      console.log("get lyrics for", song);
-      // should map to song index or something to keep them grouped?
-    });
-
-    // have a way to click max 4 tiles
-    // have a way to run select if 4 tiles are selected
-    // select checks if those 4 tiles are connected
-    // have some kind of variable map associated?
-    // shuffle option???
-  } else {
-    alert("Access token is required to fetch your top songs.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+
+  let topSongs = await fetchTopSongs(storedAccessToken);
+  console.log(topSongs);
+
+  // display the grid and controls
+  hideAllExcept("connections-container");
+
+  // get 4 songs from the top (that have lyrics)
+  // get the lyrics
+  // pick 4 discrete chunks from the lyrics
+  topSongs.forEach((song) => console.log(song));
+
+  let song1 = getRandomSong(topSongs);
+  let song2 = getRandomSong(topSongs);
+  let song3 = getRandomSong(topSongs);
+  let song4 = getRandomSong(topSongs);
+
+  let usedSongs = [song1, song2, song3, song4];
+
+  let lyrics = usedSongs.map((song) => {
+    console.log("get lyrics for", song);
+    // should map to song index or something to keep them grouped?
+  });
+
+  // have a way to click max 4 tiles
+  // have a way to run select if 4 tiles are selected
+  // select checks if those 4 tiles are connected
+  // have some kind of variable map associated?
+  // shuffle option???
 }
 
 function select(tileId) {
