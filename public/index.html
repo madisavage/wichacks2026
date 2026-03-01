@@ -21,14 +21,45 @@
           </button>
           <div id="top-songs-container"></div>
         </section>
+        <section id="picross-section">
+            <h2>Picrossify an album cover</h2>
+            <button id="picrossify-random-image" class="picrossify-button">
+                Picrossify an random album cover
+            </button>
+            <canvas id="album-canvas"></canvas>
+        </section>
       </main>
 
       <footer>
         <p>Made with <span class="heart">♥</span></p>
       </footer>
     </div>
-
+    <script src="picrossify.js" defer></script>
     <script>
+      let songs = null;
+
+      function picrossify(imageUrl) {
+          // The resulting width and height of the 2D grid array of pixels
+
+          const image = new Image();
+          image.crossOrigin = "Anonymous";
+          image.onload = function () {
+              const canvas = document.getElementById('album-canvas');
+              const ctx = canvas.getContext('2d');
+
+              canvas.width = image.width;
+              canvas.height = image.height;
+
+              ctx.drawImage(image, 0, 0);
+
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+              const pixelImage = new PixelImage(imageData, image.width, image.height);
+
+              document.getElementById("picross-section").innerHTML = pixelImage.toHtml();
+          }
+          image.src = imageUrl;
+      }
       async function fetchTopSongs(accessToken) {
         const container = document.getElementById("top-songs-container");
         const loadButton = document.getElementById("load-top-songs");
@@ -46,6 +77,7 @@
             throw new Error(data.error || "Failed to fetch top songs");
           }
 
+          songs = data.topSongs;
           displayTopSongs(data.topSongs);
         } catch (error) {
           container.innerHTML = `
@@ -110,6 +142,14 @@
             fetchTopSongs(accessToken);
           } else {
             alert("Access token is required to fetch your top songs.");
+          }
+        });
+      
+      document
+        .getElementById("picrossify-random-image")
+        .addEventListener("click", () => {
+          if (songs != null) {
+            picrossify(songs[1].albumImage);
           }
         });
     </script>
