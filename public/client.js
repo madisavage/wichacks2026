@@ -68,6 +68,17 @@ function hideAllExcept(targetId) {
   });
 }
 
+function resetSelectedButtons(targetId) {
+  const selectedItems = document.getElementsByClassName('btn-primary selected');
+  for (item in selectedItems) {
+    item = selectedItems[item]
+    item.className = 'btn-primary';
+  }
+
+  let targetItem = document.getElementById(targetId);
+  targetItem.className = 'btn-primary selected';
+}
+
 //* TOP SONGS *//
 async function fetchTopSongs(accessToken) {
   const container = document.getElementById("top-songs-container");
@@ -150,6 +161,7 @@ async function loadTopSongs() {
   topSongs = await fetchTopSongs(storedAccessToken);
   displayTopSongs(topSongs);
   hideAllExcept("top-songs-container");
+  resetSelectedButtons('load-top-songs');
 }
 
 document
@@ -226,6 +238,7 @@ async function loadTopArtists() {
   topArtists = await fetchTopArtists(storedAccessToken);
   displayTopArtists(topArtists);
   hideAllExcept("top-artists-container");
+  resetSelectedButtons('load-top-artists');
 }
 
 document
@@ -302,6 +315,7 @@ async function loadTopAlbums() {
   topAlbums = await fetchTopAlbums(storedAccessToken);
   displayTopAlbums(topAlbums);
   hideAllExcept("top-albums-container");
+  resetSelectedButtons('load-top-albums');
 }
 
 document
@@ -329,6 +343,7 @@ async function loadConnections() {
 
   // display the grid and controls
   hideAllExcept("connections-container");
+  resetSelectedButtons('load-connections');
 
   // get 4 songs from the top (that have lyrics)
   // get the lyrics
