@@ -479,7 +479,7 @@ function getRandomCover(albums) {
 }
 
 async function loadColoring() {
-  const DIMENSION = 20;
+  const GRID_SIZE = 10;
 
   if (!storedAccessToken) {
     alert("Please authenticate with Spotify first!");
@@ -509,29 +509,72 @@ async function loadColoring() {
         
         // Modifies the solutionImage in place to contain the finished result data and returns the
         // color palette used.
-        const palette = solutionImage.picrossify(DIMENSION, DIMENSION);
+        const palette = solutionImage.picrossify(GRID_SIZE, GRID_SIZE);
         
+        const colClues = solutionImage.getColClues();
+        const rowClues = solutionImage.getRowClues();
+        let maxColClues = 0;
+        for (let i = 0; i < colClues.length; ++i) {
+          if (colClues[i].length > maxColClues) {
+            maxColClues = colClues[i].length;
+          }
+        }
+        let maxRowClues = 0;
+        for (let i = 0; i < rowClues.length; ++i) {
+          if (rowClues[i].length > maxRowClues) {
+            maxRowClues = rowClues[i].length;
+          }
+        }
+
         const colorPicker = document.getElementById('colorPicker');
-        const GRID_SIZE = 20; // Hardcoding to 20 for now.
+        grid.style.gridTemplateColumns = `repeat(${maxRowClues+GRID_SIZE}, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(${maxColClues+GRID_SIZE}, 1fr)`;
+        grid.style.width = `${30 * (maxRowClues+GRID_SIZE)}px`;
+        grid.style.height = `${30 * (maxColClues+GRID_SIZE)}px`;
 
-        grid.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 1fr)`;
-        grid.style.gridTemplateRows = `repeat(${GRID_SIZE}, 1fr)`;
+        for (let i = 0; i < GRID_SIZE + maxColClues; ++i) {
+          for (let j = 0; j < GRID_SIZE + maxRowClues; ++j) {
+            if (i < maxColClues && j < maxRowClues) {
+              grid.innerHTML += `<div></div>`;
+            } else if (i < maxColClues && j >= maxRowClues) {
+              let colClue = colClues[j - maxRowClues];
+              if (i >= maxColClues - colClue.length) {
+                let clue = document.createElement('div');
+                clue.style.color = colClue[i + colClue.length - maxColClues].color;
+                clue.innerHTML += `${colClue[i + colClue.length - maxColClues].count}`;
+                grid.appendChild(clue);
+              } else {
+                grid.innerHTML += `<div></div>`;
+              }
+            } else if (i >= maxColClues && j < maxRowClues) {
+              let rowClue = rowClues[i - maxColClues];
+              if (j >= maxRowClues - rowClue.length) {
+                let clue = document.createElement('div');
+                clue.style.color = rowClue[j + rowClue.length - maxRowClues].color;
+                clue.innerHTML += `${rowClue[j + rowClue.length - maxRowClues].count}`;
+                grid.appendChild(clue);
+              } else {
+                grid.innerHTML += `<div></div>`;
+              }
+            } else {
+              // append a normal grid cell
+              const cell = document.createElement('div');
+              cell.classList.add('cover-by-number-grid-cell');
 
-        for (let i = 0; i < GRID_SIZE * GRID_SIZE; ++i) {
-          const cell = document.createElement('div');
-          cell.classList.add('cover-by-number-grid-cell');
+              cell.id = `cell${i - maxColClues}-${j - maxRowClues}`;
 
-          cell.addEventListener('click', function() {
-            cell.style.backgroundColor = colorPicker.value;
-          });
+              cell.addEventListener('click', function() {
+                cell.style.backgroundColor = colorPicker.value;
+              });
 
-          cell.addEventListener('mouseover', function(event) {
-            if (event.buttons === 1) {
-              cell.style.backgroundColor = colorPicker.value;
+              cell.addEventListener('mouseover', function(event) {
+                if (event.buttons === 1) {
+                  cell.style.backgroundColor = colorPicker.value;
+                }
+              });
+              grid.appendChild(cell);
             }
-          });
-
-          grid.appendChild(cell);
+          }
         }
       }
   };

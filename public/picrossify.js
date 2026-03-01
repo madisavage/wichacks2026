@@ -273,4 +273,48 @@ class PixelImage {
         this.width = newWidth;
         return palette;
     }
+
+    getColClues() {
+        let clues = [];
+        for (let i = 0; i < this.width; ++i) {
+            let color = this.pixels[0][i].toString();
+            let count = 1;
+            let colClues = [];
+            for (let j = 1; j < this.height; ++j) {
+                const newColor = this.pixels[j][i].toString();
+                if (newColor !== color) {
+                    colClues.push({color: color, count: count});
+                    color = newColor;
+                    count = 1;
+                } else {
+                    ++count;
+                }
+            }
+            colClues.push({color: color, count: count});
+            clues.push(colClues);
+        }
+        return clues;
+    }
+
+    getRowClues() {
+        let clues = [];
+        for (let i = 0; i < this.height; ++i) {
+            let color = this.pixels[i][0].toString();
+            let count = 1;
+            let rowClues = [];
+            for (let j = 1; j < this.width; ++j) {
+                const newColor = this.pixels[i][j].toString();
+                if (newColor !== color) {
+                    rowClues.push({color: color, count: count});
+                    color = newColor;
+                    count = 1;
+                } else {
+                    ++count;
+                }
+            }
+            rowClues.push({color: color, count: count});
+            clues.push(rowClues);
+        }
+        return clues;
+    }
 }
