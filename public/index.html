@@ -49,62 +49,32 @@
     <div id="top-artists-container" style="display: none"></div>
     <div id="top-albums-container" style="display: none"></div>
     <div id="connections-container" style="display: none">
+      <div id="logo"><img id='title' src="./images/connectunes.png"></div>
       <div id="connections-tiles">
-        <button class="connection-tile" id="tile-1" onclick="select(1)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-2" onclick="select(2)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-3" onclick="select(3)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-4" onclick="select(4)">
-          .
-        </button>
-
-        <button class="connection-tile" id="tile-5" onclick="select(5)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-6" onclick="select(6)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-7" onclick="select(7)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-8" onclick="select(8)">
-          .
-        </button>
-
-        <button class="connection-tile" id="tile-9" onclick="select(9)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-10" onclick="select(10)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-11" onclick="select(11)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-12" onclick="select(12)">
-          .
-        </button>
-
-        <button class="connection-tile" id="tile-13" onclick="select(13)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-14" onclick="select(14)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-15" onclick="select(15)">
-          .
-        </button>
-        <button class="connection-tile" id="tile-16" onclick="select(16)">
-          .
-        </button>
+        <button class="connections-tile" id="tile-1" onclick="select(1)"></button>
+        <button class="connections-tile" id="tile-2" onclick="select(2)"></button>
+        <button class="connections-tile" id="tile-3" onclick="select(3)"></button>
+        <button class="connections-tile" id="tile-4" onclick="select(4)"></button>
+        <button class="connections-tile" id="tile-5" onclick="select(5)"></button>
+        <button class="connections-tile" id="tile-6" onclick="select(6)"></button>
+        <button class="connections-tile" id="tile-7" onclick="select(7)"></button>
+        <button class="connections-tile" id="tile-8" onclick="select(8)"></button>
+        <button class="connections-tile" id="tile-9" onclick="select(9)"></button>
+        <button class="connections-tile" id="tile-10" onclick="select(10)"></button>
+        <button class="connections-tile" id="tile-11" onclick="select(11)"></button>
+        <button class="connections-tile" id="tile-12" onclick="select(12)"></button>
+        <button class="connections-tile" id="tile-13" onclick="select(13)"></button>
+        <button class="connections-tile" id="tile-14" onclick="select(14)"></button>
+        <button class="connections-tile" id="tile-15" onclick="select(15)"></button>
+        <button class="connections-tile" id="tile-16" onclick="select(16)"></button>
       </div>
       <div id="connections-controls">
-        <button>Guess</button>
-        <p>Number of guesses left</p>
+        <button id="connections-guess">Guess</button>
+        <div id="guesses-count">Number of guesses left: <span id="guesses-left">5</span></div>
+      </div>
+      <div id="results">
+        <div class="result-tile num-1">'' + lyricString + '</div>
+        <div class="result-tile num-3">' + lyricString + '</div>
       </div>
     </div>
     <div id="coloring-container" style="display: none;"></div>
