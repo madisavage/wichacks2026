@@ -531,6 +531,16 @@ async function loadColoring() {
         grid.style.gridTemplateRows = `repeat(${maxColClues+GRID_SIZE}, 1fr)`;
         grid.style.width = `${30 * (maxRowClues+GRID_SIZE)}px`;
         grid.style.height = `${30 * (maxColClues+GRID_SIZE)}px`;
+        grid.addEventListener('click', function(event) {
+          if (event.target && event.target.matches('.cover-by-number-grid-cell')) {
+            event.target.style.backgroundColor = colorPicker.value;
+          }
+        });
+        grid.addEventListener('mouseover', function(event) {
+          if (event.buttons === 1 && event.target && event.target.matches('.cover-by-number-grid-cell')) {
+            event.target.style.backgroundColor = colorPicker.value;
+          }
+        });
 
         for (let i = 0; i < GRID_SIZE + maxColClues; ++i) {
           for (let j = 0; j < GRID_SIZE + maxRowClues; ++j) {
@@ -557,21 +567,9 @@ async function loadColoring() {
                 grid.innerHTML += `<div></div>`;
               }
             } else {
-              // append a normal grid cell
               const cell = document.createElement('div');
               cell.classList.add('cover-by-number-grid-cell');
-
               cell.id = `cell${i - maxColClues}-${j - maxRowClues}`;
-
-              cell.addEventListener('click', function() {
-                cell.style.backgroundColor = colorPicker.value;
-              });
-
-              cell.addEventListener('mouseover', function(event) {
-                if (event.buttons === 1) {
-                  cell.style.backgroundColor = colorPicker.value;
-                }
-              });
               grid.appendChild(cell);
             }
           }
