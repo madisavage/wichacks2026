@@ -81,6 +81,24 @@ async function fetchTopSongs(accessToken) {
   }
 }
 
+//* LYRICS *//
+async function getLyrics(song) {
+  try {
+    const response = await fetch(
+      `https://lrclib.net/api/get?artist_name=${song.artist}&track_name=${song.name}&album_name=${song.album}&duration=${song.duration}`,
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log("issue finding lyrics");
+      throw new Error(data.error || "Failed to fetch lyrics");
+    }
+    console.log(data.trackName + ":\n\n" + data.plainLyrics);
+  } catch (error) {
+    console.error(error); // Catches HTTP errors and network errors
+  }
+}
+
 function displayTopSongs(songs) {
   const container = document.getElementById("top-songs-container");
 
@@ -297,7 +315,12 @@ document.getElementById("load-connections").addEventListener("click", () => {
 
 // should add a check for has lyrics before it returns
 function getRandomSong(songs) {
-  return songs[Math.floor(Math.random() * songs.length)];
+  const tempSong = songs[Math.floor(Math.random() * songs.length)];
+  if (getLyrics(tempSong)) {
+    return tempSong;
+  } else {
+    getRandomSong(songs);
+  }
 }
 
 async function loadConnections() {
