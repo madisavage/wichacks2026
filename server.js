@@ -283,6 +283,8 @@ app.get("/api/top-albums", async (req, res) => {
 
 //helper method to call lyric api with song info
 async function fetchLyrics(songName, artistName, albumName, duration) {
+  console.log(songName, artistName, albumName, duration);
+
   try {
     const response = await axios.get("https://lrclib.net/api/get", {
       params: {
@@ -304,10 +306,12 @@ async function fetchLyrics(songName, artistName, albumName, duration) {
   }
 }
 
-app.get("/api/top-songs/lyrics", async (req, res) => {
+app.get("/api/lyrics", async (req, res) => {
   try {
     const userAccessToken =
-      req.query.token || req.headers.authorization?.split(" ")[1];
+      "BQDHDDBgoEdSPnuOK_CzN4FuFJgLEHQaS3u7xJmMW_-GIJ9vO1ggfL8g03baZfFpTEQcswcJ3MMkRMmkyE0nDD1ZlLDot3Eip77eknt5PTIhcmJK0TNeWZSZ0JWgyFK8ilqApWTXjAex8rPDWVdfUR42_3Al15k551DcWBUxp0l5myw7-rhbyHTwlhzVcD6xOyw7VWRM9jVBXsKbLuS0kMqfe7fD7ZCoIoybz7d2xu_iy2_D_muik_EsOWc81Hcq8xfFO6zytYXDFHVERbl921ZtSJKsrwRgKJvc8KQGnbKXuXAJYhKaFcPBwHoIpwbpBzMc";
+
+    console.log(userAccessToken);
 
     if (!userAccessToken) {
       return res.status(401).json({
@@ -316,6 +320,7 @@ app.get("/api/top-songs/lyrics", async (req, res) => {
     }
 
     const topSongs = await fetchTopSongs(userAccessToken);
+    // const sampleSongs = [{}]
 
     const songsWithLyrics = await Promise.all(
       topSongs.map(async (song) => ({

@@ -352,16 +352,16 @@ document.getElementById("connections-guess").addEventListener("click", () => {
   makeGuess();
 });
 
-async function checkForLyrics(song) {
-  const temp = await fetch(`api/lyrics`);
-  if (temp.plainLyrics) {
-    return true;
-  }
-  return false;
+async function getLyrics() {
+  const temp = await fetch(`/api/lyrics`);
+  console.log(temp.json().keySet());
+  const data = await temp.json().songs;
+  return data;
 }
 
 // should add a check for has lyrics before it returns
 async function getRandomSong(songs, used) {
+  console.log(songs);
   if (used.size > songs.length) {
     console.log("ran out of songs to check!");
   }
@@ -371,22 +371,26 @@ async function getRandomSong(songs, used) {
   }
   const tempSong = songs[index];
 
-  let hasLyrics = await checkForLyrics(tempSong);
+  let hasLyrics = await getLyrics();
+  console.log(hasLyrics);
 
-  if (hasLyrics) {
-    used.add(index);
-    return tempSong;
-  } else {
-    console.log("issue");
-    used.add(index);
-    return await getRandomSong(songs, used);
-  }
+  return hasLyrics;
+
+  // if (hasLyrics) {
+  //   used.add(index);
+  //   return tempSong;
+  // } else {
+  //   console.log("issue");
+  //   used.add(index);
+  //   return await getRandomSong(songs, used);
+  // }
 }
 
 // make sure to avoid duplicates
 function fourRandomLyrics(song) {
   let toReturn = new Set();
-  let lyrics = song.lyrics.split("\n");
+  console.log(song);
+  let lyrics = song[0][0].lyrics.split("\n");
   const index1 = Math.floor(Math.random() * lyrics.length);
 
   let lyric1 = lyrics[index1];
@@ -445,9 +449,10 @@ async function loadConnections() {
 
   console.log("getting songs with lyrics...");
   let song1 = await getRandomSong(topSongs, used);
-  let song2 = await getRandomSong(topSongs, used);
-  let song3 = await getRandomSong(topSongs, used);
-  let song4 = await getRandomSong(topSongs, used);
+  console.log(song1);
+  let song2 = song1;
+  let song3 = song1;
+  let song4 = song1;
 
   let usedSongs = [song1, song2, song3, song4];
 
