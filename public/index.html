@@ -27,6 +27,7 @@
                 Picrossify an random album cover
             </button>
             <canvas id="album-canvas"></canvas>
+            <div id="picross-container"></div>
         </section>
       </main>
 
@@ -39,8 +40,6 @@
       let songs = null;
 
       function picrossify(imageUrl) {
-          // The resulting width and height of the 2D grid array of pixels
-
           const image = new Image();
           image.crossOrigin = "Anonymous";
           image.onload = function () {
@@ -54,9 +53,11 @@
 
               const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-              const pixelImage = new PixelImage(imageData, image.width, image.height);
+              let pixelImage = new PixelImage(imageData, image.width, image.height);
 
-              document.getElementById("picross-section").innerHTML = pixelImage.toHtml();
+              pixelImage.picrossify(40, 40);
+
+              document.getElementById("picross-container").innerHTML += pixelImage.toHtml();
           }
           image.src = imageUrl;
       }
@@ -145,11 +146,14 @@
           }
         });
       
+      
+      let picrossifiedCount = 0;
       document
         .getElementById("picrossify-random-image")
         .addEventListener("click", () => {
           if (songs != null) {
-            picrossify(songs[1].albumImage);
+            picrossify(songs[picrossifiedCount].albumImage);
+            ++picrossifiedCount;
           }
         });
     </script>
