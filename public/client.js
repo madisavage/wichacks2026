@@ -528,20 +528,33 @@ async function loadColoring() {
           }
         }
 
-        const colorPicker = document.getElementById('colorPicker');
+        const colorPicker = document.getElementById('color-picker');
+        colorPicker.setAttribute("value", "0xFFFFFF");
+        colorPicker.addEventListener('click', function(event) {
+          if (event.target && event.target.matches('.cover-picker-grid-cell')) {
+            colorPicker.setAttribute("value", event.target.style.backgroundColor);
+          }
+        });
+        for (let i = 0; i < palette.length; ++i) {
+          const colorPickerCell = document.createElement('div');
+          colorPickerCell.classList.add('cover-picker-grid-cell');
+          colorPickerCell.style.background = palette[i];
+          colorPicker.appendChild(colorPickerCell);
+        }
+
         grid.style.gridTemplateColumns = `repeat(${maxRowClues+GRID_SIZE}, 1fr)`;
         grid.style.gridTemplateRows = `repeat(${maxColClues+GRID_SIZE}, 1fr)`;
         grid.style.width = `${30 * (maxRowClues+GRID_SIZE)}px`;
         grid.style.height = `${30 * (maxColClues+GRID_SIZE)}px`;
         grid.addEventListener('click', function(event) {
           if (event.target && event.target.matches('.cover-by-number-grid-cell')) {
-            event.target.style.backgroundColor = colorPicker.value;
+            event.target.style.backgroundColor = colorPicker.getAttribute("value");
             event.target.style.opacity = 1;
           }
         });
         grid.addEventListener('mouseover', function(event) {
           if (event.buttons === 1 && event.target && event.target.matches('.cover-by-number-grid-cell')) {
-            event.target.style.backgroundColor = colorPicker.value;
+            event.target.style.backgroundColor = colorPicker.getAttribute("value");
             event.target.style.opacity = 1;
           }
         });
