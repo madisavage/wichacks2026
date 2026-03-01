@@ -60,7 +60,7 @@ app.get("/api/top-songs", async (req, res) => {
       name: track.name,
       artist: track.artists.map((artist) => artist.name).join(", "),
       album: track.album.name,
-      albumImage: track.album.images[0]?.url,
+      albumImage: track.album.images[2]?.url,
       previewUrl: track.preview_url,
       spotifyUrl: track.external_urls.spotify,
       duration: Math.floor(track.duration_ms / 1000),
