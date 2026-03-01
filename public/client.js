@@ -145,14 +145,14 @@ function displayTopSongs(songs) {
     .map(
       (song) => `
             <div class="song-item card card-hover-scale">
-                <div class="song-rank rank-badge">#${song.rank}</div>
-                <div class="song-image image-thumbnail">
+                <div class="rank-badge">#${song.rank}</div>
+                <div class="image-thumbnail">
                     <img src="${song.albumImage}" alt="${song.album}">
                 </div>
-                <div class="song-info info-container">
-                    <h3 class="song-name text-title-ellipsis">${song.name}</h3>
-                    <p class="song-artist text-subtitle">${song.artist}</p>
-                    <p class="song-album text-detail">${song.album}</p>
+                <div class="info-container">
+                    <h3 class="text-title-ellipsis">${song.name}</h3>
+                    <p class="text-subtitle">${song.artist}</p>
+                    <p class="text-detail">${song.album}</p>
                 </div>
                 <div class="song-actions">
                     ${song.previewUrl ? `<button class="btn-play btn-base btn-primary-color btn-hover-scale" onclick="playPreview('${song.previewUrl}')">▶ Preview</button>` : ""}
@@ -232,14 +232,14 @@ function displayTopArtists(artists) {
     .map(
       (artist) => `
             <div class="song-item card card-hover-scale">
-                <div class="song-rank rank-badge">#${artist.rank}</div>
-                <div class="song-image image-thumbnail">
+                <div class="rank-badge">#${artist.rank}</div>
+                <div class="image-thumbnail">
                     <img src="${artist.image}" alt="${artist.name}">
                 </div>
                 <div class="song-info info-container">
-                    <h3 class="song-name text-title-ellipsis">${artist.name}</h3>
-                    <p class="song-artist text-subtitle">${artist.genres || "No genres listed"}</p>
-                    <p class="song-album text-detail">Popularity: ${artist.popularity}/100 • ${artist.followers.toLocaleString()} followers</p>
+                    <h3 class="text-title-ellipsis">${artist.name}</h3>
+                    <p class="text-subtitle">${artist.genres || "No genres listed"}</p>
+                    <p class="text-detail">Popularity: ${artist.popularity}/100 • ${artist.followers.toLocaleString()} followers</p>
                 </div>
                 <div class="song-actions">
                     <a href="${artist.spotifyUrl}" target="_blank" class="btn-spotify btn-base btn-dark btn-hover-scale">Open in Spotify</a>
@@ -309,14 +309,14 @@ function displayTopAlbums(albums) {
     .map(
       (album) => `
             <div class="song-item card card-hover-scale">
-                <div class="song-rank rank-badge">#${album.rank}</div>
-                <div class="song-image image-thumbnail">
+                <div class="rank-badge">#${album.rank}</div>
+                <div class="image-thumbnail">
                     <img src="${album.image}" alt="${album.name}">
                 </div>
                 <div class="song-info info-container">
-                    <h3 class="song-name text-title-ellipsis">${album.name}</h3>
-                    <p class="song-artist text-subtitle">${album.artist}</p>
-                    <p class="song-album text-detail">${album.totalTracks} tracks • Released: ${album.releaseDate}</p>
+                    <h3 class="text-title-ellipsis">${album.name}</h3>
+                    <p class="text-subtitle">${album.artist}</p>
+                    <p class="text-detail">${album.totalTracks} tracks • Released: ${album.releaseDate}</p>
                 </div>
                 <div class="song-actions">
                     <a href="${album.spotifyUrl}" target="_blank" class="btn-spotify btn-base btn-dark btn-hover-scale">Open in Spotify</a>
@@ -483,12 +483,15 @@ async function initializeHighLowGame() {
     return;
   }
 
-  // Fetch top songs if not already loaded
   if (!topSongs || topSongs.length === 0) {
     topSongs = await fetchTopSongs(storedAccessToken);
   }
 
-  // Shuffle the songs array for random gameplay
+  if (!topSongs || topSongs.length < 2) {
+    alert("Not enough top songs to play High Low! Are you authenticated?");
+    return;
+  }
+
   highLowSongs = [...topSongs].sort(() => Math.random() - 0.5);
   currentSongIndex = 0;
   nextSongIndex = 1;
@@ -498,6 +501,10 @@ async function initializeHighLowGame() {
   updateHighLowDisplay();
   document.getElementById("score").textContent = highLowScore;
   document.getElementById("highlow-message").textContent = "";
+  const highLowMessageEl = document.getElementById("highlow-message");
+  highLowMessageEl.textContent = "";
+  highLowMessageEl.classList.remove("correct", "wrong");
+  highLowMessageEl.style.display = "";
   document.getElementById("start-highlow").style.display = "none";
   document.getElementById("highlow-controls").style.display = "flex";
 }
@@ -517,9 +524,11 @@ function updateHighLowDisplay() {
   document.getElementById("next-image").src = nextSong.albumImage;
   document.getElementById("next-name").textContent = nextSong.name;
   document.getElementById("next-artist").textContent = nextSong.artist;
+
+  document.getElementById("next-song-name").textContent = nextSong.name;
 }
 
-function makeGuess(isHigher) {
+function makeHighLowGuess(isHigher) {
   if (!gameActive) return;
 
   const currentSong = highLowSongs[currentSongIndex];
@@ -560,7 +569,7 @@ function makeGuess(isHigher) {
         if (nextSongIndex >= highLowSongs.length) {
           document.getElementById("highlow-loading").style.display = "none";
           messageEl.style.display = "block";
-          endGame(true);
+          endHighLow(true);
         } else {
           // Hide spinner and update display
           setTimeout(() => {
@@ -589,11 +598,11 @@ function makeGuess(isHigher) {
   } else {
     messageEl.textContent = `❌ Wrong! Final Score: ${highLowScore}`;
     messageEl.className = "highlow-message wrong";
-    endGame(false);
+    endHighLow(false);
   }
 }
 
-function endGame(completed) {
+function endHighLow(completed) {
   gameActive = false;
   document.getElementById("highlow-controls").style.display = "none";
   document.getElementById("start-highlow").style.display = "block";
@@ -618,7 +627,7 @@ document
   .addEventListener("click", () => initializeHighLowGame());
 document
   .getElementById("guess-higher")
-  .addEventListener("click", () => makeGuess(true));
+  .addEventListener("click", () => makeHighLowGuess(true));
 document
   .getElementById("guess-lower")
-  .addEventListener("click", () => makeGuess(false));
+  .addEventListener("click", () => makeHighLowGuess(false));

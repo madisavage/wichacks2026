@@ -69,7 +69,8 @@
                     id="current-image"
                     class="image-square"
                     src=""
-                    alt="Album cover"
+                    alt=""
+                    aria-hidden
                   />
                   <h3 id="current-name" class="text-title">Song Name</h3>
                   <p id="current-artist" class="text-subtitle">Artist Name</p>
@@ -83,11 +84,20 @@
                     id="next-image"
                     class="image-square"
                     src=""
-                    alt="Album cover"
+                    alt=""
+                    aria-hidden
                   />
                   <h3 id="next-name" class="text-title">???</h3>
                   <p id="next-artist" class="text-subtitle">???</p>
                 </div>
+              </div>
+              <div
+                id="highlow-song-info"
+                style="margin: 20px 0; text-align: center"
+              >
+                <p style="font-size: 1.2em; font-weight: bold; margin: 0">
+                  <span id="next-song-name"></span> has:
+                </p>
               </div>
               <div id="highlow-controls">
                 <button
