@@ -1,5 +1,5 @@
 //* AUTHENTICATION *//
-let storedAccessToken = 'BQDtWq8k9nlGBGDvjM0zOlsj-MwYtnBYvNqEvI75_n_0y4GPxsm1G54DD5A8cZNv2VTUbRPIWEUf5bEbd1I-cUCxiu6jaQTfNru5uBvIEjMDD5txEBRgaSTgn_M_a8v3cvkmydrj4fcEX32HkKWFVDHHxaGHRqKwFwD1w3jakLg5cBxQMgkJtIeMhQUe-EZbZARsJprpcgfW0k1Y6FfbYpyxaJrkDW8wLRoJE3R0e0WqIW5C0uqbtcVpoi5cwaWX9RzUZdDYu9Kcsq_IcdwXrUg-2OGpH3n2ZUT4FbP9zywCRz9njUw33lUW0S6k3QaT-vef';
+let storedAccessToken = null;
 
 // Check for access token in URL on page load
 window.addEventListener("DOMContentLoaded", async () => {
@@ -69,14 +69,14 @@ function hideAllExcept(targetId) {
 }
 
 function resetSelectedButtons(targetId) {
-  const selectedItems = document.getElementsByClassName('btn-primary selected');
+  const selectedItems = document.getElementsByClassName("btn-primary selected");
   for (item in selectedItems) {
-    item = selectedItems[item]
-    item.className = 'btn-primary';
+    item = selectedItems[item];
+    item.className = "btn-primary";
   }
 
   let targetItem = document.getElementById(targetId);
-  targetItem.className = 'btn-primary selected';
+  targetItem.className = "btn-primary selected";
 }
 
 //* TOP SONGS *//
@@ -181,7 +181,7 @@ async function loadTopSongs() {
   topSongs = await fetchTopSongs(storedAccessToken);
   displayTopSongs(topSongs);
   hideAllExcept("top-songs-container");
-  resetSelectedButtons('load-top-songs');
+  resetSelectedButtons("load-top-songs");
 }
 
 document
@@ -258,7 +258,7 @@ async function loadTopArtists() {
   topArtists = await fetchTopArtists(storedAccessToken);
   displayTopArtists(topArtists);
   hideAllExcept("top-artists-container");
-  resetSelectedButtons('load-top-artists');
+  resetSelectedButtons("load-top-artists");
 }
 
 document
@@ -335,7 +335,7 @@ async function loadTopAlbums() {
   topAlbums = await fetchTopAlbums(storedAccessToken);
   displayTopAlbums(topAlbums);
   hideAllExcept("top-albums-container");
-  resetSelectedButtons('load-top-albums');
+  resetSelectedButtons("load-top-albums");
 }
 
 document
@@ -382,7 +382,7 @@ async function loadConnections() {
   let topSongs = await fetchTopSongs(storedAccessToken);
 
   hideAllExcept("connections-container");
-  resetSelectedButtons('load-connections');
+  resetSelectedButtons("load-connections");
 
   let song1 = getRandomSong(topSongs);
   let song2 = getRandomSong(topSongs);
@@ -414,24 +414,23 @@ function select(tileId) {
   let tile = document.getElementById("tile-" + tileId);
   if (selected.has(tileId)) {
     selected.delete(tileId);
-    tile.className = 'connections-tile';
-  }
-
-  else {
+    tile.className = "connections-tile";
+  } else {
     if (selected.size < 4) {
       selected.add(tileId);
-      tile.className = 'connections-tile selected';
+      tile.className = "connections-tile selected";
     }
   }
 }
 
 // get the lyrics from the set and add them to a div, which gets put at the bottom of the game page
 function addResultSet(index) {
-  let section = document.getElementById('results');
+  let section = document.getElementById("results");
 
-  let htmlString = '';
+  let htmlString = "";
   validSets.index.map((lyricString) => {
-    htmlString += '<div class="result-tile num-' + index + '">' + lyricString + '</div> '
+    htmlString +=
+      '<div class="result-tile num-' + index + '">' + lyricString + "</div> ";
   });
 
   section.innerHTML = htmlString;
@@ -439,32 +438,31 @@ function addResultSet(index) {
 
 function makeGuess() {
   if (guessesLeft < 1) {
-    console.log('out of guesses!');
+    console.log("out of guesses!");
     return;
   }
   if (selected.size < 4) {
-    console.log('not enough selected')
+    console.log("not enough selected");
     return;
   }
   let index = -1;
   for (const set in validSets) {
     if (selected.difference(validSets[set]).size == 0) {
-      console.log('set found');
+      console.log("set found");
       index = set;
     }
   }
   if (index == -1) {
     guessesLeft--;
-    document.getElementById('guesses-left').innerHTML = guessesLeft;
+    document.getElementById("guesses-left").innerHTML = guessesLeft;
   } else {
     addResultSet(index);
     for (const buttonId in selected) {
-      correctTile = document.getElementById('tile-' + buttonId);
+      correctTile = document.getElementById("tile-" + buttonId);
       correctTile.disabled = true;
 
-      correctTile.className = 'connections-tile num-' + index;
+      correctTile.className = "connections-tile num-" + index;
     }
     selected = new Set();
-
   }
 }
