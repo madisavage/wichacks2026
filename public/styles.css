@@ -281,19 +281,19 @@
     margin: 10px;
 }
 
-.result-tile.num-1 {
+.num-1 {
     background-color: var(--blue);
 }
 
-.result-tile.num-2 {
+.num-2 {
     background-color: var(--purple);
 }
 
-.result-tile.num-3 {
+.num-3 {
     background-color: var(--yellow);
 }
 
-.result-tile.num-4 {
+.num-4 {
     background-color: var(--red);
 }
 

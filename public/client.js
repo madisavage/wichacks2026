@@ -381,13 +381,9 @@ async function loadConnections() {
   }
   let topSongs = await fetchTopSongs(storedAccessToken);
 
-  // display the grid and controls
   hideAllExcept("connections-container");
   resetSelectedButtons('load-connections');
 
-  // get 4 songs from the top (that have lyrics)
-  // get the lyrics
-  // pick 4 discrete chunks from the lyrics
   let song1 = getRandomSong(topSongs);
   let song2 = getRandomSong(topSongs);
   let song3 = getRandomSong(topSongs);
@@ -398,7 +394,6 @@ async function loadConnections() {
   let lyricsPromises = usedSongs.map((song) => {
     return getLyrics(song)
       .then((lyrics) => {
-        // console.log("Lyrics for", song, ":", lyrics);
         return { song, lyrics: lyrics.plainLyrics };
       })
       .catch((error) => {
@@ -413,12 +408,6 @@ async function loadConnections() {
     });
     console.log("Updated usedSongs with lyrics:", usedSongs);
   });
-
-  // have a way to click max 4 tiles - done
-  // have a way to run select if 4 tiles are selected - done
-  // select checks if those 4 tiles are connected
-  // have some kind of variable map associated?
-  // shuffle option??? - no
 }
 
 function select(tileId) {
@@ -436,6 +425,7 @@ function select(tileId) {
   }
 }
 
+// get the lyrics from the set and add them to a div, which gets put at the bottom of the game page
 function addResultSet(index) {
   let section = document.getElementById('results');
 
@@ -458,8 +448,6 @@ function makeGuess() {
   }
   let index = -1;
   for (const set in validSets) {
-    console.log(set, validSets[set])
-    console.log(selected)
     if (selected.difference(validSets[set]).size == 0) {
       console.log('set found');
       index = set;
@@ -470,5 +458,13 @@ function makeGuess() {
     document.getElementById('guesses-left').innerHTML = guessesLeft;
   } else {
     addResultSet(index);
+    for (const buttonId in selected) {
+      correctTile = document.getElementById('tile-' + buttonId);
+      correctTile.disabled = true;
+
+      correctTile.className = 'connections-tile num-' + index;
+    }
+    selected = new Set();
+
   }
 }
