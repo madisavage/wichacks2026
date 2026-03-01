@@ -69,14 +69,14 @@ function hideAllExcept(targetId) {
 }
 
 function resetSelectedButtons(targetId) {
-  const selectedItems = document.getElementsByClassName('btn-primary selected');
+  const selectedItems = document.getElementsByClassName("btn-primary selected");
   for (item in selectedItems) {
-    item = selectedItems[item]
-    item.className = 'btn-primary';
+    item = selectedItems[item];
+    item.className = "btn-primary";
   }
 
   let targetItem = document.getElementById(targetId);
-  targetItem.className = 'btn-primary selected';
+  targetItem.className = "btn-primary selected";
 }
 
 //* TOP SONGS *//
@@ -110,25 +110,25 @@ async function fetchTopSongs(accessToken) {
   }
 }
 
-//* LYRICS *//
-async function getLyrics(song) {
-  try {
-    const response = await fetch(
-      `https://lrclib.net/api/get?artist_name=${song.artist}&track_name=${song.name}&album_name=${song.album}&duration=${song.duration}`,
-    );
-    const data = await response.json();
+// //* LYRICS *//
+// async function getLyrics(song) {
+//   try {
+//     const response = await fetch(
+//       `https://lrclib.net/api/get?artist_name=${song.artist}&track_name=${song.name}&album_name=${song.album}&duration=${song.duration}`,
+//     );
+//     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error || "Failed to fetch lyrics");
-    }
+//     if (!response.ok) {
+//       throw new Error(data.error || "Failed to fetch lyrics");
+//     }
 
-    // console.log(data.trackName + ":\n\n" + data.plainLyrics);
+//     // console.log(data.trackName + ":\n\n" + data.plainLyrics);
 
-    return data;
-  } catch (error) {
-    console.error(error); // Catches HTTP errors and network errors
-  }
-}
+//     return data;
+//   } catch (error) {
+//     console.error(error); // Catches HTTP errors and network errors
+//   }
+// }
 
 function displayTopSongs(songs) {
   const container = document.getElementById("top-songs-container");
@@ -181,7 +181,7 @@ async function loadTopSongs() {
   topSongs = await fetchTopSongs(storedAccessToken);
   displayTopSongs(topSongs);
   hideAllExcept("top-songs-container");
-  resetSelectedButtons('load-top-songs');
+  resetSelectedButtons("load-top-songs");
 }
 
 document
@@ -258,7 +258,7 @@ async function loadTopArtists() {
   topArtists = await fetchTopArtists(storedAccessToken);
   displayTopArtists(topArtists);
   hideAllExcept("top-artists-container");
-  resetSelectedButtons('load-top-artists');
+  resetSelectedButtons("load-top-artists");
 }
 
 document
@@ -335,7 +335,7 @@ async function loadTopAlbums() {
   topAlbums = await fetchTopAlbums(storedAccessToken);
   displayTopAlbums(topAlbums);
   hideAllExcept("top-albums-container");
-  resetSelectedButtons('load-top-albums');
+  resetSelectedButtons("load-top-albums");
 }
 
 document
@@ -348,7 +348,7 @@ document.getElementById("load-connections").addEventListener("click", () => {
 });
 
 async function checkForLyrics(song) {
-  const temp = await getLyrics(song);
+  const temp = await fetch(`api/lyrics`);
   if (temp.plainLyrics) {
     return true;
   }
@@ -366,6 +366,17 @@ function getRandomSong(songs) {
   }
 }
 
+function displayLyricsInTiles(usedSongs) {
+  let grid = document.getElementById("connections-tiles");
+
+  let tiles = grid.children;
+
+  for (let i = 0; i < 16; i++) {
+    let tile = tiles[i];
+    tile.innerHTML = usedSongs[0].lyrics.split("\n")[i];
+  }
+}
+
 async function loadConnections() {
   if (!storedAccessToken) {
     alert("Please authenticate with Spotify first!");
@@ -377,7 +388,7 @@ async function loadConnections() {
 
   // display the grid and controls
   hideAllExcept("connections-container");
-  resetSelectedButtons('load-connections');
+  resetSelectedButtons("load-connections");
 
   // get 4 songs from the top (that have lyrics)
   // get the lyrics
@@ -408,6 +419,24 @@ async function loadConnections() {
       return { ...item.song, lyrics: item.lyrics };
     });
     console.log("Updated usedSongs with lyrics:", usedSongs);
+
+    // let grid = document.getElementById("connections-tiles");
+    // let tile1 = grid.firstElementChild
+    console.log("test: \n", usedSongs);
+    // tile1.innerHTML = usedSongs[0].lyrics.split("\n")[0];
+    // console.log(tile1.innerHTML);
+    let grid = document.getElementById("connections-tiles");
+
+    let tiles = grid.children;
+
+    for (let i = 0; i < 4; i++) {
+      for (let x = 0; x < 4; x++) {
+        let tile = tiles[i + x];
+        // tile.innerHTML = usedSongs[i%4].lyrics.split("\n")[i]+usedSongs[i%4].name;
+        tile.innerHTML = i + "," + x + " " + usedSongs[x].name;
+        i + 1;
+      }
+    }
   });
 
   // have a way to click max 4 tiles

@@ -280,6 +280,23 @@ app.get("/api/top-albums", async (req, res) => {
   }
 });
 
+app.get("/api/lyrics", async () => {
+  try {
+    const response = await axios.get(
+      `https://lrclib.net/api/get?artist_name=Dua+Lipa&track_name=Break+my+Heart&album_name=Future+Nostalgia&duration=222`,
+    );
+    console.log(response.data.plainLyrics);
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to fetch lyrics");
+    }
+
+    // return response.data.plainLyrics;
+  } catch (error) {
+    console.error(error); // Catches HTTP errors and network errors
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
