@@ -69,14 +69,14 @@ function hideAllExcept(targetId) {
 }
 
 function resetSelectedButtons(targetId) {
-  const selectedItems = document.getElementsByClassName('btn-primary selected');
+  const selectedItems = document.getElementsByClassName("btn-primary selected");
   for (item in selectedItems) {
-    item = selectedItems[item]
-    item.className = 'btn-primary';
+    item = selectedItems[item];
+    item.className = "btn-primary";
   }
 
   let targetItem = document.getElementById(targetId);
-  targetItem.className = 'btn-primary selected';
+  targetItem.className = "btn-primary selected";
 }
 
 //* TOP SONGS *//
@@ -181,7 +181,7 @@ async function loadTopSongs() {
   topSongs = await fetchTopSongs(storedAccessToken);
   displayTopSongs(topSongs);
   hideAllExcept("top-songs-container");
-  resetSelectedButtons('load-top-songs');
+  resetSelectedButtons("load-top-songs");
 }
 
 document
@@ -258,7 +258,7 @@ async function loadTopArtists() {
   topArtists = await fetchTopArtists(storedAccessToken);
   displayTopArtists(topArtists);
   hideAllExcept("top-artists-container");
-  resetSelectedButtons('load-top-artists');
+  resetSelectedButtons("load-top-artists");
 }
 
 document
@@ -335,7 +335,7 @@ async function loadTopAlbums() {
   topAlbums = await fetchTopAlbums(storedAccessToken);
   displayTopAlbums(topAlbums);
   hideAllExcept("top-albums-container");
-  resetSelectedButtons('load-top-albums');
+  resetSelectedButtons("load-top-albums");
 }
 
 document
@@ -345,6 +345,10 @@ document
 // CONNECTIONS CODE
 document.getElementById("load-connections").addEventListener("click", () => {
   loadConnections();
+});
+
+document.getElementById("connections-guess").addEventListener("click", () => {
+  makeGuess();
 });
 
 async function checkForLyrics(song) {
@@ -366,23 +370,19 @@ function getRandomSong(songs) {
   }
 }
 
+let selected = new Set();
+let validSets = [new Set(), new Set(), new Set(), new Set()];
+let guessesLeft = 5;
+
 async function loadConnections() {
   if (!storedAccessToken) {
     alert("Please authenticate with Spotify first!");
     return;
   }
-
   let topSongs = await fetchTopSongs(storedAccessToken);
-  console.log(topSongs);
 
-  // display the grid and controls
   hideAllExcept("connections-container");
-  resetSelectedButtons('load-connections');
-
-  // get 4 songs from the top (that have lyrics)
-  // get the lyrics
-  // pick 4 discrete chunks from the lyrics
-  topSongs.forEach((song) => console.log(song));
+  resetSelectedButtons("load-connections");
 
   let song1 = getRandomSong(topSongs);
   let song2 = getRandomSong(topSongs);
@@ -394,7 +394,6 @@ async function loadConnections() {
   let lyricsPromises = usedSongs.map((song) => {
     return getLyrics(song)
       .then((lyrics) => {
-        // console.log("Lyrics for", song, ":", lyrics);
         return { song, lyrics: lyrics.plainLyrics };
       })
       .catch((error) => {
@@ -409,14 +408,61 @@ async function loadConnections() {
     });
     console.log("Updated usedSongs with lyrics:", usedSongs);
   });
-
-  // have a way to click max 4 tiles
-  // have a way to run select if 4 tiles are selected
-  // select checks if those 4 tiles are connected
-  // have some kind of variable map associated?
-  // shuffle option???
 }
 
 function select(tileId) {
-  console.log("clicking button ", tileId);
+  let tile = document.getElementById("tile-" + tileId);
+  if (selected.has(tileId)) {
+    selected.delete(tileId);
+    tile.className = "connections-tile";
+  } else {
+    if (selected.size < 4) {
+      selected.add(tileId);
+      tile.className = "connections-tile selected";
+    }
+  }
+}
+
+// get the lyrics from the set and add them to a div, which gets put at the bottom of the game page
+function addResultSet(index) {
+  let section = document.getElementById("results");
+
+  let htmlString = "";
+  validSets.index.map((lyricString) => {
+    htmlString +=
+      '<div class="result-tile num-' + index + '">' + lyricString + "</div> ";
+  });
+
+  section.innerHTML = htmlString;
+}
+
+function makeGuess() {
+  if (guessesLeft < 1) {
+    console.log("out of guesses!");
+    return;
+  }
+  if (selected.size < 4) {
+    console.log("not enough selected");
+    return;
+  }
+  let index = -1;
+  for (const set in validSets) {
+    if (selected.difference(validSets[set]).size == 0) {
+      console.log("set found");
+      index = set;
+    }
+  }
+  if (index == -1) {
+    guessesLeft--;
+    document.getElementById("guesses-left").innerHTML = guessesLeft;
+  } else {
+    addResultSet(index);
+    for (const buttonId in selected) {
+      correctTile = document.getElementById("tile-" + buttonId);
+      correctTile.disabled = true;
+
+      correctTile.className = "connections-tile num-" + index;
+    }
+    selected = new Set();
+  }
 }
