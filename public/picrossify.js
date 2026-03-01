@@ -53,7 +53,13 @@ class CIELABPixel {
         return t > 0.008856 ? Math.pow(t, 1/3) : (7.787 * t) + 16/116;
     }
 
-    constructor(rgbPixel) {
+    constructor(LStar, aStar, bStar) {
+        this.LStar = LStar;
+        this.aStar = aStar;
+        this.bStar = bStar;
+    }
+
+    static fromRGBPixel(rgbPixel) {
         // Normalize RGB values
         const redPrime = rgbPixel.red / 255;
         const greenPrime = rgbPixel.green / 255;
@@ -76,19 +82,20 @@ class CIELABPixel {
 
         const fOfYOverYn = CIELABPixel.#f(y / yN);
 
-        // Black = 0, White = 100
-        this.LStar = 116 * fOfYOverYn - 16;
-
-        // Negative values go towards green, positive values go towards red
-        this.aStar = 500 * (CIELABPixel.#f(x / xN) - fOfYOverYn);
-
-        // Negative values go towards blue, positive values go towards yellow
-        this.bStar = 200 * (fOfYOverYn - CIELABPixel.#f(z / zN));
+        return new CIELABPixel(116 * fOfYOverYn - 16, 500 * (CIELABPixel.#f(x / xN) - fOfYOverYn), 200 * (fOfYOverYn - CIELABPixel.#f(z / zN)));
     }
 
     // Returns the distance to another CIELABPixel squared
     distance(other) {
         return Math.pow(other.LStar - this.LStar, 2) + Math.pow(other.aStar - this.aStar, 2) + Math.pow(other.bStar - this.bStar, 2);
+    }
+}
+
+class CIELABPixelRef {
+    constructor(pixel, row, col) {
+        this.pixel = pixel;
+        this.row = row;
+        this.col = col;
     }
 }
 
@@ -130,7 +137,7 @@ class PixelImage {
         return result;
     }
 
-    picrossify(newWidth, newHeight, takeTheAverage) {
+    picrossify(newWidth, newHeight) {
         let newPixels = [];
         const rowOffset = this.height / (2 * newHeight);
         const colOffset = this.width / (2 * newWidth);
@@ -139,12 +146,112 @@ class PixelImage {
             for (let j = 0; j < newWidth; ++j) {
                 const yPos = Math.round(rowOffset + i * this.height / newHeight);
                 const xPos = Math.round(colOffset + j * this.width / newWidth);
-                newRow.push(RGBPixel.fromCIELABPixel(new CIELABPixel(this.pixels[yPos][xPos])));
+                newRow.push(CIELABPixel.fromRGBPixel(this.pixels[yPos][xPos]));
             }
             newPixels.push(newRow);
         }
 
-        this.pixels = newPixels;
+        let blackPixels = [];
+        let grayPixels = [];
+        let whitePixels = [];
+        let brownPixels = [];
+        let darkRedPixels = [];
+        let darkPurplePixels = [];
+        let darkAquaPixels = [];
+        let lightGreenPixels = [];
+        let darkGreenPixels = [];
+        let redPixels = [];
+        let pinkPixels = [];
+        let orangePixels = [];
+        let yellowPixels = [];
+        let cyanPixels = [];
+        let darkBluePixels = [];
+
+        let colorBuckets = [
+            blackPixels,
+            grayPixels,
+            whitePixels,
+            brownPixels,
+            darkRedPixels,
+            darkPurplePixels,
+            darkAquaPixels,
+            lightGreenPixels,
+            darkGreenPixels,
+            redPixels,
+            pinkPixels,
+            orangePixels,
+            yellowPixels,
+            cyanPixels,
+            darkBluePixels,
+        ];
+
+        for (let i = 0; i < newHeight; ++i) {
+            for (let j = 0; j < newWidth; ++j) {
+                const aStar = newPixels[i][j].aStar;
+                const bStar = newPixels[i][j].bStar;
+                const LStar = newPixels[i][j].LStar;
+                const angle = Math.atan2(bStar, aStar);
+                
+                if (-20 <= aStar && aStar <= 20 && -20 <= bStar && bStar <= 20) {
+                    if (LStar < 20) {
+                        blackPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (LStar > 80) {
+                        whitePixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else {
+                        grayPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    }
+                } else if (LStar < 50) {
+                    if (angle < -3 * Math.PI / 4 || angle > 3 * Math.PI / 4) {
+                        darkGreenPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (-3 * Math.PI / 4 <= angle && angle < -Math.PI / 4) {
+                        brownPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (-Math.PI / 4 <= angle && angle < Math.PI / 4) {
+                        darkRedPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (Math.PI / 4 <= angle && angle < 4 * Math.PI / 7) {
+                        darkPurplePixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (4 * Math.PI / 7 <= angle && angle < 3 * Math.PI / 5) {
+                        darkBluePixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (3 * Math.PI / 5 <= angle) {
+                        darkAquaPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    }
+                } else {
+                    if (angle < -3 * Math.PI / 5 || angle >= 3 * Math.PI / 4) {
+                        lightGreenPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (-3 * Math.PI / 5 <= angle && angle < -3 * Math.PI / 7) {
+                        yellowPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (-3 * Math.PI / 7 <= angle && angle < 3 * Math.PI / 10) {
+                        orangePixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (3 * Math.PI / 10 <= angle && angle < Math.PI / 8) {
+                        redPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (Math.PI / 8 <= angle && angle < 2 * Math.PI / 5) {
+                        pinkPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    } else if (2 * Math.PI / 5 <= angle && angle < 3 * Math.PI / 4) {
+                        cyanPixels.push(new CIELABPixelRef(newPixels[i][j], i, j));
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < colorBuckets.length; ++i) {
+            const bucket = colorBuckets[i];
+            if (bucket.length > 0) {
+                let LStar = 0;
+                let aStar = 0;
+                let bStar = 0;
+                for (let i = 0; i < bucket.length; ++i) {
+                    const pixelRef = bucket[i];
+                    LStar += pixelRef.pixel.LStar;
+                    aStar += pixelRef.pixel.aStar;
+                    bStar += pixelRef.pixel.bStar;
+                }
+                const avgPixel = new CIELABPixel(LStar / bucket.length, aStar / bucket.length, bStar / bucket.length);
+                for (let i = 0; i < bucket.length; ++i) {
+                    const pixelRef = bucket[i];
+                    newPixels[pixelRef.row][pixelRef.col] = avgPixel;
+                }
+            }
+        }
+
+        this.pixels = newPixels.map((row) => row.map((cielabPixel) => RGBPixel.fromCIELABPixel(cielabPixel)));
         this.width = newWidth;
         this.height = newHeight;
     }
