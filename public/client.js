@@ -1,5 +1,5 @@
 //* AUTHENTICATION *//
-let storedAccessToken = 'BQC0fb-qfiqJ06O5yrphIbFsrK0cGxTO-9bluqUmjiAubRqPJwdfCe6wJ4lThFTUPbUAtOaRSX1dDFB6Je8R63NoduQDMCjecYHUFoTsmv_dVHiCVF6ySv_MP0F3PH-HTZfKJqVeXQKhxYZMNYaSby6RpK0o-1wSziyUhbkX1zcqp4JccdCcII4WHMtZrpNxPXf587Mjzkp2dvB56aKlc7_PwuVDIZ73YGiPV_Uy64yreHLDi8dWfsSp_mq5QqFzGx0Juq1p0RqmB4k7mPboXm51-KGw-lvcMcoYQegw7zIYX7sbvNuj1GpW699qPKmQdAdr';
+let storedAccessToken = null;
 
 // Check for access token in URL on page load
 window.addEventListener("DOMContentLoaded", async () => {
