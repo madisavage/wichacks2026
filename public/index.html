@@ -1,161 +1,121 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotingfy Game</title>
-    <script
-      src="https://unpkg.com/htmx.org@1.9.10"
-      integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <div class="container">
-      <main>
-        <section id="top-songs-section">
-          <h2>Your Top Songs</h2>
-          <button id="load-top-songs" class="btn-primary">
-            Load Top Songs
-          </button>
-          <div id="top-songs-container"></div>
-        </section>
-        <section id="picross-section">
-            <h2>Picrossify an album cover</h2>
-            <button id="picrossify-random-image" class="picrossify-button">
-                Picrossify an random album cover
-            </button>
-            <canvas id="album-canvas"></canvas>
-            <div id="picross-container"></div>
-        </section>
-      </main>
 
-      <footer>
-        <p>Made with <span class="heart">♥</span></p>
-      </footer>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotingfy Game</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"
+    integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <main>
+      <div id="nav">
+
+        <!-- <h2>Authenticate with Spotify</h2> -->
+        <button id="auth-button" class="btn-primary">
+          Login with Spotify
+        </button>
+
+        <!-- <h2>Your Top Songs</h2> -->
+        <button id="load-top-songs" class="btn-primary">
+          Load Top Songs
+        </button>
+
+        <!-- <h2>Your Top Artists</h2> -->
+        <button id="load-top-artists" class="btn-primary">
+          Load Top Artists
+        </button>
+
+        <!-- <h2>Your Top Albums</h2> -->
+        <button id="load-top-albums" class="btn-primary">
+          Load Top Albums
+        </button>
+
+        <!-- <h2>Connectunes Game</h2> -->
+        <button id="load-connections" class="btn-primary">
+          Load Connectunes
+        </button>
+
+      </div>
+  </div>
+  <div id="content">
+    <div id="placeholder">Placeholder!</div>
+    <div id="auth-status" style="display: none"></div>
+    <div id="top-songs-container" style="display: none"></div>
+    <div id="top-artists-container" style="display: none"></div>
+    <div id="top-albums-container" style="display: none"></div>
+    <div id="connections-container" style="display: none">
+      <div id="connections-tiles">
+        <button class="connection-tile" id="tile-1" onclick="select(1)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-2" onclick="select(2)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-3" onclick="select(3)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-4" onclick="select(4)">
+          .
+        </button>
+
+        <button class="connection-tile" id="tile-5" onclick="select(5)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-6" onclick="select(6)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-7" onclick="select(7)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-8" onclick="select(8)">
+          .
+        </button>
+
+        <button class="connection-tile" id="tile-9" onclick="select(9)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-10" onclick="select(10)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-11" onclick="select(11)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-12" onclick="select(12)">
+          .
+        </button>
+
+        <button class="connection-tile" id="tile-13" onclick="select(13)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-14" onclick="select(14)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-15" onclick="select(15)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-16" onclick="select(16)">
+          .
+        </button>
+      </div>
+      <div id="connections-controls">
+        <button>Guess</button>
+        <p>Number of guesses left</p>
+      </div>
     </div>
-    <script src="picrossify.js" defer></script>
-    <script>
-      let songs = null;
+  </div>
+  </main>
 
-      function picrossify(imageUrl) {
-          const image = new Image();
-          image.crossOrigin = "Anonymous";
-          image.onload = function () {
-              const canvas = document.getElementById('album-canvas');
-              const ctx = canvas.getContext('2d');
+  <footer>
+    <p>Made with <span class="heart">♥</span></p>
+  </footer>
 
-              canvas.width = image.width;
-              canvas.height = image.height;
+  <script src="/client.js"></script>
+</body>
 
-              ctx.drawImage(image, 0, 0);
-
-              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-              let pixelImage = new PixelImage(imageData, image.width, image.height);
-
-              pixelImage.picrossify(40, 40);
-
-              document.getElementById("picross-container").innerHTML += pixelImage.toHtml();
-          }
-          image.src = imageUrl;
-      }
-      async function fetchTopSongs(accessToken) {
-        const container = document.getElementById("top-songs-container");
-        const loadButton = document.getElementById("load-top-songs");
-
-        // Show loading state
-        container.innerHTML =
-          '<p class="loading">Loading your top songs...</p>';
-        loadButton.disabled = true;
-
-        try {
-          const response = await fetch(`/api/top-songs?token=${accessToken}`);
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error || "Failed to fetch top songs");
-          }
-
-          songs = data.topSongs;
-          displayTopSongs(data.topSongs);
-        } catch (error) {
-          container.innerHTML = `
-                        <div class="error">
-                            <p>❌ ${error.message}</p>
-                            <p class="error-note">Note: To view your top songs, you need to authenticate with Spotify.</p>
-                        </div>
-                    `;
-        } finally {
-          loadButton.disabled = false;
-        }
-      }
-
-      function displayTopSongs(songs) {
-        const container = document.getElementById("top-songs-container");
-
-        if (!songs || songs.length === 0) {
-          container.innerHTML = '<p class="no-data">No top songs found.</p>';
-          return;
-        }
-
-        const songsHTML = songs
-          .map(
-            (song) => `
-                    <div class="song-item">
-                        <div class="song-rank">#${song.rank}</div>
-                        <div class="song-image">
-                            <img src="${song.albumImage}" alt="${song.album}">
-                        </div>
-                        <div class="song-info">
-                            <h3 class="song-name">${song.name}</h3>
-                            <p class="song-artist">${song.artist}</p>
-                            <p class="song-album">${song.album}</p>
-                        </div>
-                        <div class="song-actions">
-                            ${song.previewUrl ? `<button class="btn-play" onclick="playPreview('${song.previewUrl}')">▶ Preview</button>` : ""}
-                            <a href="${song.spotifyUrl}" target="_blank" class="btn-spotify">Open in Spotify</a>
-                        </div>
-                    </div>
-                `,
-          )
-          .join("");
-
-        container.innerHTML = `<div class="songs-list">${songsHTML}</div>`;
-      }
-
-      let currentAudio = null;
-      function playPreview(url) {
-        if (currentAudio) {
-          currentAudio.pause();
-        }
-        currentAudio = new Audio(url);
-        currentAudio.play();
-      }
-
-      document
-        .getElementById("load-top-songs")
-        .addEventListener("click", () => {
-          const accessToken = prompt("Enter your Spotify access token:");
-
-          if (accessToken) {
-            fetchTopSongs(accessToken);
-          } else {
-            alert("Access token is required to fetch your top songs.");
-          }
-        });
-      
-      
-      let picrossifiedCount = 0;
-      document
-        .getElementById("picrossify-random-image")
-        .addEventListener("click", () => {
-          if (songs != null) {
-            picrossify(songs[picrossifiedCount].albumImage);
-            ++picrossifiedCount;
-          }
-        });
-    </script>
-  </body>
 </html>
