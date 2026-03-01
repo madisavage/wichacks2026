@@ -354,9 +354,9 @@ document.getElementById("connections-guess").addEventListener("click", () => {
 
 async function getLyrics() {
   const temp = await fetch(`/api/lyrics`);
-  console.log(temp.json().keySet());
-  const data = await temp.json().songs;
-  return data;
+  const data = await temp.json();
+  console.log(data);
+  return data.songs;
 }
 
 // should add a check for has lyrics before it returns
@@ -364,19 +364,20 @@ async function getRandomSong(songs, used) {
   console.log(songs);
   if (used.size > songs.length) {
     console.log("ran out of songs to check!");
+    return null;
   }
   const index = Math.floor(Math.random() * songs.length);
   if (used.has(index)) {
-    return getRandomSong(songs, used);
+    // return getRandomSong(songs, used);
   }
   const tempSong = songs[index];
 
-  let hasLyrics = await getLyrics();
-  console.log(hasLyrics);
+  let allSongsLyrics = await getLyrics();
+  console.log(allSongsLyrics);
 
-  return hasLyrics;
+  return allSongsLyrics[0];
 
-  // if (hasLyrics) {
+  // if (allSongsLyrics) {
   //   used.add(index);
   //   return tempSong;
   // } else {
@@ -390,7 +391,21 @@ async function getRandomSong(songs, used) {
 function fourRandomLyrics(song) {
   let toReturn = new Set();
   console.log(song);
-  let lyrics = song[0][0].lyrics.split("\n");
+
+  // Check if song has lyrics
+  if (!song || !song.lyrics) {
+    console.error("Song doesn't have lyrics:", song);
+    return toReturn;
+  }
+
+  let lyrics = song.lyrics.split("\n").filter((line) => line.trim() !== "");
+  console.log(JSON.stringify(lyrics));
+  // Make sure we have enough lyrics
+  if (lyrics.length < 4) {
+    console.error("Not enough lyrics lines:", lyrics.length);
+    return toReturn;
+  }
+
   const index1 = Math.floor(Math.random() * lyrics.length);
 
   let lyric1 = lyrics[index1];
