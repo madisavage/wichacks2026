@@ -1,5 +1,5 @@
 //* AUTHENTICATION *//
-let storedAccessToken = null;
+let storedAccessToken = 'BQC0fb-qfiqJ06O5yrphIbFsrK0cGxTO-9bluqUmjiAubRqPJwdfCe6wJ4lThFTUPbUAtOaRSX1dDFB6Je8R63NoduQDMCjecYHUFoTsmv_dVHiCVF6ySv_MP0F3PH-HTZfKJqVeXQKhxYZMNYaSby6RpK0o-1wSziyUhbkX1zcqp4JccdCcII4WHMtZrpNxPXf587Mjzkp2dvB56aKlc7_PwuVDIZ73YGiPV_Uy64yreHLDi8dWfsSp_mq5QqFzGx0Juq1p0RqmB4k7mPboXm51-KGw-lvcMcoYQegw7zIYX7sbvNuj1GpW699qPKmQdAdr';
 
 // Check for access token in URL on page load
 window.addEventListener("DOMContentLoaded", async () => {
@@ -66,6 +66,17 @@ function hideAllExcept(targetId) {
       container.style.display = "block";
     }
   });
+}
+
+function resetSelectedButtons(targetId) {
+  const selectedItems = document.getElementsByClassName('btn-primary selected');
+  for (item in selectedItems) {
+    item = selectedItems[item]
+    item.className = 'btn-primary';
+  }
+
+  let targetItem = document.getElementById(targetId);
+  targetItem.className = 'btn-primary selected';
 }
 
 //* TOP SONGS *//
@@ -150,6 +161,7 @@ async function loadTopSongs() {
   topSongs = await fetchTopSongs(storedAccessToken);
   displayTopSongs(topSongs);
   hideAllExcept("top-songs-container");
+  resetSelectedButtons('load-top-songs');
 }
 
 document
@@ -226,6 +238,7 @@ async function loadTopArtists() {
   topArtists = await fetchTopArtists(storedAccessToken);
   displayTopArtists(topArtists);
   hideAllExcept("top-artists-container");
+  resetSelectedButtons('load-top-artists');
 }
 
 document
@@ -302,6 +315,7 @@ async function loadTopAlbums() {
   topAlbums = await fetchTopAlbums(storedAccessToken);
   displayTopAlbums(topAlbums);
   hideAllExcept("top-albums-container");
+  resetSelectedButtons('load-top-albums');
 }
 
 document
@@ -329,6 +343,7 @@ async function loadConnections() {
 
   // display the grid and controls
   hideAllExcept("connections-container");
+  resetSelectedButtons('load-connections');
 
   // get 4 songs from the top (that have lyrics)
   // get the lyrics
