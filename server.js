@@ -284,22 +284,27 @@ app.get("/api/top-albums", async (req, res) => {
 //helper method to call lyric api with song info
 async function fetchLyrics(songName, artistName, albumName, duration) {
   try {
-    const response = await axios.get(
-      `https://lrclib.net/api/get?artist_name=${artistName}&track_name=${songName}&album_name=${albumName}&duration=${duration}`,
-    );
-    console.log(response.data.plainLyrics);
+    const response = await axios.get("https://lrclib.net/api/get", {
+      params: {
+        artist_name: artistName,
+        track_name: songName,
+        album_name: albumName,
+        duration: duration,
+      },
+    });
 
-    if (!response.ok) {
-      throw new Error(data.error || "Failed to fetch lyrics");
-    }
-
-    return response.data;
+    return response.data.plainLyrics || null;
   } catch (error) {
-    console.error("error fetching lyrics");
+    console.error(
+      "Lyrics API error:",
+      error.response?.status,
+      error.response?.data || error.message,
+    );
+    return null;
   }
 }
 
-app.get("/api/lyrics", async (req, res) => {
+app.get("/api/top-songs/lyrics", async (req, res) => {
   try {
     const userAccessToken =
       req.query.token || req.headers.authorization?.split(" ")[1];
