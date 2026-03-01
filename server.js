@@ -112,6 +112,32 @@ app.get("/api/callback", async (req, res) => {
   }
 });
 
+//helper method so topSongs can be fetched for lyrics endpoint as well
+async function fetchTopSongs(userAccessToken) {
+  // Fetch top songs from Spotify API
+  const response = await axios.get("https://api.spotify.com/v1/me/top/tracks", {
+    headers: {
+      Authorization: `Bearer ${userAccessToken}`,
+    },
+    params: {
+      limit: 25,
+      time_range: "medium_term",
+    },
+  });
+
+  return response.data.items.map((track, index) => ({
+    rank: index + 1,
+    name: track.name,
+    artist: track.artists.map((artist) => artist.name).join(", "),
+    album: track.album.name,
+    albumImage: track.album.images[0]?.url,
+    previewUrl: track.preview_url,
+    spotifyUrl: track.external_urls.spotify,
+    duration: Math.floor(track.duration_ms / 1000),
+    id: track.id,
+  }));
+}
+
 // Get user's top songs
 app.get("/api/top-songs", async (req, res) => {
   try {
@@ -124,32 +150,7 @@ app.get("/api/top-songs", async (req, res) => {
       });
     }
 
-    // Fetch top songs from Spotify API
-    const response = await axios.get(
-      "https://api.spotify.com/v1/me/top/tracks",
-      {
-        headers: {
-          Authorization: `Bearer ${userAccessToken}`,
-        },
-        params: {
-          limit: 25,
-          time_range: "medium_term",
-        },
-      },
-    );
-
-    const topSongs = response.data.items.map((track, index) => ({
-      rank: index + 1,
-      name: track.name,
-      artist: track.artists.map((artist) => artist.name).join(", "),
-      album: track.album.name,
-      albumImage: track.album.images[0]?.url,
-      previewUrl: track.preview_url,
-      spotifyUrl: track.external_urls.spotify,
-      duration: Math.floor(track.duration_ms / 1000),
-      id: track.id,
-    }));
-
+    const topSongs = await fetchTopSongs(userAccessToken);
     res.json({ topSongs });
   } catch (error) {
     console.error(
@@ -280,10 +281,11 @@ app.get("/api/top-albums", async (req, res) => {
   }
 });
 
-app.get("/api/lyrics", async () => {
+//helper method to call lyric api with song info
+async function fetchLyrics(songName, artistName, albumName, duration) {
   try {
     const response = await axios.get(
-      `https://lrclib.net/api/get?artist_name=Dua+Lipa&track_name=Break+my+Heart&album_name=Future+Nostalgia&duration=222`,
+      `https://lrclib.net/api/get?artist_name=${artistName}&track_name=${songName}&album_name=${albumName}&duration=${duration}`,
     );
     console.log(response.data.plainLyrics);
 
@@ -291,8 +293,40 @@ app.get("/api/lyrics", async () => {
       throw new Error(data.error || "Failed to fetch lyrics");
     }
 
-    // return response.data.plainLyrics;
+    return response.data;
   } catch (error) {
+    console.error("error fetching lyrics");
+  }
+}
+
+app.get("/api/lyrics", async () => {
+  try {
+    const userAccessToken =
+      req.query.token || req.headers.authorization?.split(" ")[1];
+
+    if (!userAccessToken) {
+      return res.status(401).json({
+        error: "No access token provided. User authentication required.",
+      });
+    }
+
+    const topSongs = await fetchTopSongs(userAccessToken);
+
+    const songsWithLyrics = await Promise.all(
+      topSongs.map(async (song) => ({
+        ...song,
+        lyrics: await fetchLyrics(
+          song.name,
+          song.artist,
+          song.album,
+          song.duration,
+        ),
+      })),
+    );
+
+    res.json({ songs: songsWithLyrics });
+  } catch (error) {
+    // return response.data.plainLyrics;
     console.error(error); // Catches HTTP errors and network errors
   }
 });
