@@ -20,6 +20,8 @@
           Load Top Songs
         </button>
         <div id="top-songs-container"></div>
+      </section>
+      <section id="connections-containers">
         <button id="load-connections" class="btn-primary">
           Load Connectunes
         </button>
@@ -76,8 +78,8 @@
         .map(
           // can put these back later:
           // <div class="song-image">
-        //     <img src="${song.albumImage}" alt="${song.album}">
-        // </div>
+          //     <img src="${song.albumImage}" alt="${song.album}">
+          // </div>
           (song) => `
                     <div class="song-item">
                         <div class="song-rank">#${song.rank}</div>
@@ -127,35 +129,9 @@
       .getElementById("load-connections")
       .addEventListener("click", () => loadConnections());
 
-    // // code specific to the connections game
-    // async function fetchSongInfo(accessToken, id) {
-    //   const container = document.getElementById("top-songs-container");
-      
-    //   try {
-    //     console.log('going to call info with: ', id)
-    //     const response = await fetch(`/api/connections-info?token=${accessToken} songId=${id}`);
-    //     const data = await response.json();
-    //     console.log(data)
-
-    //     if (!response.ok) {
-    //       throw new Error(data.error || "Failed to fetch top songs");
-    //     }
-
-    //     return data;
-
-    //   } catch (error) {
-    //     container.innerHTML = `
-    //                     <div class="error">
-    //                         <p>❌ ${error.message}</p>
-    //                         <p class="error-note">Note: To view your top songs, you need to authenticate with Spotify.</p>
-    //                     </div>
-    //                 `;
-    //   }
-    // }
-
     // should add a check for has lyrics before it returns
     function getRandomSong(songs) {
-      return songs[Math.floor(Math.random()*songs.length)];
+      return songs[Math.floor(Math.random() * songs.length)];
     }
 
     async function loadConnections() {
@@ -164,17 +140,23 @@
         let topSongs = await fetchTopSongs(accessToken);
         console.log(topSongs);
         const container = document.getElementById("connections-containers");
-        
+
         // get 4 songs from the top (that have lyrics)
         // get the lyrics
         // pick 4 discrete chunks from the lyrics
-
         topSongs.forEach((song) => console.log(song));
 
-        song1 = getRandomSong(topSongs);
-        song2 = getRandomSong(topSongs);
-        song3 = getRandomSong(topSongs);
-        song4 = getRandomSong(topSongs);
+        let song1 = getRandomSong(topSongs);
+        let song2 = getRandomSong(topSongs);
+        let song3 = getRandomSong(topSongs);
+        let song4 = getRandomSong(topSongs);
+
+        let usedSongs = [song1, song2, song3, song4];
+
+        let lyrics = usedSongs.map((song) => {
+          console.log('get lyrics for', song);
+          // should map to song index or something to keep them grouped?
+        });
 
         // have a way to click max 4 tiles
         // have a way to run select if 4 tiles are selected
