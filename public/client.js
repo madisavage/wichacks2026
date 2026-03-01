@@ -56,6 +56,7 @@ function hideAllExcept(targetId) {
     "top-artists-container",
     "top-albums-container",
     "connections-container",
+    "coloring-container",
   ];
   contentIds.map((id) => {
     if (id != targetId) {
@@ -419,4 +420,27 @@ async function loadConnections() {
 
 function select(tileId) {
   console.log("clicking button ", tileId);
+}
+
+// COLORING CODE
+document.getElementById("load-coloring").addEventListener("click", () => {
+  loadColoring();
+})
+
+function getRandomCover(albums) {
+  const album = albums[Math.floor(Math.random() * albums.length)];
+  return album.image;
+}
+
+async function loadColoring() {
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
+  }
+  let topAlbums = await fetchTopSongs(storedAccessToken);
+
+  hideAllExcept("connections-container");
+  resetSelectedButtons('load-connections');
+
+  let image = getRandomCover(topAlbums);
 }
