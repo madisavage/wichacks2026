@@ -441,7 +441,7 @@ function addResultSet(index) {
 
   let htmlString = '';
   validSets.index.map((lyricString) => {
-    htmlString += '<div class="result-tile">' + lyricString + '</div> '
+    htmlString += '<div class="result-tile num-' + index + '">' + lyricString + '</div> '
   });
 
   section.innerHTML = htmlString;

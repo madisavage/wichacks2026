@@ -27,8 +27,8 @@
     /* Connection Colors */
     --blue: #5b5bfc;
     --purple: #b443ff;
-    --yellow: #ff544e;
-    --green: #fae64e;
+    --red: #ff544e;
+    --yellow: #fae64e;
 }
 
 .content-title {
@@ -271,6 +271,32 @@
 
 #results {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
+
+.result-tile {
+    display: block;
+    padding: 10px;
+    margin: 10px;
+    /* max-width: 80%; */
+}
+
+.result-tile.num-1 {
+    background-color: var(--blue);
+}
+
+.result-tile.num-2 {
+    background-color: var(--purple);
+}
+
+.result-tile.num-3 {
+    background-color: var(--yellow);
+}
+
+.result-tile.num-4 {
+    background-color: var(--red);
 }
 
 .selected {
@@ -285,6 +311,7 @@
 
 #logo img {
     max-width: 70%;
+    margin-bottom: 20px;
 }
 
 #connections-container {
