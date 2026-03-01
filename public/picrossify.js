@@ -131,6 +131,7 @@ class PixelImage {
         this.pixels = rgbPixels;
     }
 
+    // Returns the html representation of the grid
     toHtml() {
         let result = `<div class="picross-grid" style="${this.style()}">`;
         for (let i = 0; i < this.height; ++i) {
@@ -263,4 +264,39 @@ class PixelImage {
     }
 }
 
+function picrossify(imageUrl) {
+    const image = new Image();
+    image.crossOrigin = "Anonymous";
+    image.onload = function () {
+        /*
+        const canvas = document.getElementById('album-canvas');
+        const ctx = canvas.getContext('2d');
 
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        ctx.drawImage(image, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+        let pixelImage = PixelImage.fromImageData(imageData, image.width, image.height);
+
+        pixelImage.picrossify(40, 40);
+
+        document.getElementById("picross-container").innerHTML += pixelImage.toHtml();
+        */
+
+        // The basics for getting the pixel data from an image are as follows:
+        // A canvas needs to exist in the html.
+        // We get the 2d context of the canvas,
+        // set the canvas width and height to be the height of the image,
+        // and then draw the image on the context.
+        // It is necessary to do this so taht the image data has been loaded when we try and get the image data.
+        // The image data is an array of unsigned 8 bit integers, every 4 of which represent a pixel.
+        // The PixelImage.fromImageData() returns a PixelImage object from this array.
+        // The PixelImage class should be transformed into the logic for the color by number game in the future.
+        // Right now calling the toHtml() method on a pixel image returns a literal grid of colors representing
+        // what the finished color by number game should look like.
+    }
+    image.src = imageUrl;
+}
