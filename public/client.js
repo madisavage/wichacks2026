@@ -477,6 +477,13 @@ let nextSongIndex;
 let highLowScore;
 let gameActive = false;
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 async function initializeHighLowGame() {
   if (!storedAccessToken) {
     alert("Please authenticate with Spotify first!");
@@ -492,7 +499,8 @@ async function initializeHighLowGame() {
     return;
   }
 
-  highLowSongs = [...topSongs].sort(() => Math.random() - 0.5);
+  highLowSongs = [...topSongs];
+  shuffleArray(highLowSongs);
   currentSongIndex = 0;
   nextSongIndex = 1;
   highLowScore = 0;
