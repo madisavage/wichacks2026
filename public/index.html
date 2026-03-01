@@ -22,30 +22,27 @@
     <div class="container">
       <main>
         <div id="nav">
-          <!-- <h2>Authenticate with Spotify</h2> -->
           <button id="auth-button" class="btn-primary">
             Login with Spotify
           </button>
 
-          <!-- <h2>Your Top Songs</h2> -->
           <button id="load-top-songs" class="btn-primary">
-            Load Top Songs
+            Your Top Songs
           </button>
 
-          <!-- <h2>Your Top Artists</h2> -->
           <button id="load-top-artists" class="btn-primary">
-            Load Top Artists
+            Your Top Artists
           </button>
 
-          <!-- <h2>Your Top Albums</h2> -->
           <button id="load-top-albums" class="btn-primary">
-            Load Top Albums
+            Your Top Albums
           </button>
 
-          <!-- <h2>Connectunes Game</h2> -->
           <button id="load-connections" class="btn-primary">
-            Load Connectunes
+            Play Connectunes
           </button>
+
+          <button id="load-highlow" class="btn-primary">Play High Low</button>
         </div>
         <div id="content">
           <div id="placeholder">Placeholder!</div>
@@ -53,6 +50,75 @@
           <div id="top-songs-container" style="display: none"></div>
           <div id="top-artists-container" style="display: none"></div>
           <div id="top-albums-container" style="display: none"></div>
+          <div id="highlow-container" style="display: none">
+            <h1 class="content-title">High Low Game</h1>
+            <div id="highlow-game" class="container-medium">
+              <div id="highlow-info">
+                <p>
+                  Guess if you listen to the next song more or less than the
+                  current one!
+                </p>
+                <p id="highlow-score">Score: <span id="score">0</span></p>
+              </div>
+              <div id="highlow-cards">
+                <div class="highlow-card card-white" id="current-card">
+                  <div class="rank-badge-primary">
+                    #<span id="current-rank">?</span>
+                  </div>
+                  <img
+                    id="current-image"
+                    class="image-square"
+                    src=""
+                    alt="Album cover"
+                  />
+                  <h3 id="current-name" class="text-title">Song Name</h3>
+                  <p id="current-artist" class="text-subtitle">Artist Name</p>
+                </div>
+                <div class="highlow-vs">VS</div>
+                <div class="highlow-card card-white" id="next-card">
+                  <div class="rank-badge-primary">
+                    #<span id="next-rank">?</span>
+                  </div>
+                  <img
+                    id="next-image"
+                    class="image-square"
+                    src=""
+                    alt="Album cover"
+                  />
+                  <h3 id="next-name" class="text-title">???</h3>
+                  <p id="next-artist" class="text-subtitle">???</p>
+                </div>
+              </div>
+              <div id="highlow-controls">
+                <button
+                  id="guess-higher"
+                  class="btn-large btn-primary-color btn-hover-lift"
+                >
+                  More Listens
+                </button>
+                <button
+                  id="guess-lower"
+                  class="btn-large btn-error-color btn-hover-lift"
+                >
+                  Fewer Listens
+                </button>
+              </div>
+              <div
+                id="highlow-loading"
+                class="highlow-loading"
+                style="display: none"
+              >
+                <div class="spinner"></div>
+              </div>
+              <div id="highlow-message"></div>
+              <button
+                id="start-highlow"
+                class="btn-base btn-primary-color btn-hover-scale"
+              >
+                Start Game
+              </button>
+            </div>
+          </div>
           <div id="connections-container" style="display: none">
             <div id="logo">
               <img id="title" src="./images/connectunes.png" />
