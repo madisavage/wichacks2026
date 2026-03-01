@@ -2,7 +2,7 @@
 let storedAccessToken = null;
 
 // Check for access token in URL on page load
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const accessToken = urlParams.get("access_token");
   const error = urlParams.get("error");
@@ -10,6 +10,24 @@ window.addEventListener("DOMContentLoaded", () => {
   const authStatus = document.getElementById("auth-status");
   const authButton = document.getElementById("auth-button");
 
+  // Check for dev token first (for local testing)
+  try {
+    const devTokenResponse = await fetch("/api/dev-token");
+    const devTokenData = await devTokenResponse.json();
+
+    if (devTokenData.token) {
+      storedAccessToken = devTokenData.token;
+      authStatus.innerHTML =
+        '<p class="success">✅ Using development token (local testing mode)</p>';
+      authButton.textContent = "Authenticated ✓ (Dev)";
+      authButton.disabled = true;
+      return; // Skip OAuth flow if dev token is available
+    }
+  } catch (err) {
+    console.error("Error checking for dev token:", err);
+  }
+
+  // Handle OAuth flow
   if (error) {
     authStatus.innerHTML = `<p class="error">❌ Authentication failed: ${error}</p>`;
   } else if (accessToken) {
