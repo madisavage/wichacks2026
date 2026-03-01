@@ -1,26 +1,26 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotingfy Game</title>
-    <script
-      src="https://unpkg.com/htmx.org@1.9.10"
-      integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-      crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <main>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotingfy Game</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"
+    integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <main>
+      <div id="nav">
+
         <section id="auth-section">
           <h2>Authenticate with Spotify</h2>
           <button id="auth-button" class="btn-primary">
             Login with Spotify
           </button>
-          <div id="auth-status"></div>
         </section>
 
         <section id="top-songs-section">
@@ -28,7 +28,6 @@
           <button id="load-top-songs" class="btn-primary">
             Load Top Songs
           </button>
-          <div id="top-songs-container"></div>
         </section>
 
         <section id="top-artists-section">
@@ -36,7 +35,6 @@
           <button id="load-top-artists" class="btn-primary">
             Load Top Artists
           </button>
-          <div id="top-artists-container"></div>
         </section>
 
         <section id="top-albums-section">
@@ -44,80 +42,90 @@
           <button id="load-top-albums" class="btn-primary">
             Load Top Albums
           </button>
-          <div id="top-albums-container"></div>
         </section>
 
         <section id="connections-section">
+          <h2>Connectunes Game</h2>
           <button id="load-connections" class="btn-primary">
             Load Connectunes
           </button>
-          <div id="connections-container">
-            <div id="connections-tiles">
-              <button class="connection-tile" id="tile-1" onclick="select(1)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-2" onclick="select(2)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-3" onclick="select(3)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-4" onclick="select(4)">
-                .
-              </button>
 
-              <button class="connection-tile" id="tile-5" onclick="select(5)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-6" onclick="select(6)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-7" onclick="select(7)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-8" onclick="select(8)">
-                .
-              </button>
+      </div>
+      </section>
+  </div>
+  <div id="content">
+    <div id="placeholder">Placeholder!</div>
+    <div id="auth-status" style="display: none"></div>
+    <div id="top-songs-container" style="display: none"></div>
+    <div id="top-artists-container" style="display: none"></div>
+    <div id="top-albums-container" style="display: none"></div>
+    <div id="connections-container" style="display: none">
+      <div id="connections-tiles">
+        <button class="connection-tile" id="tile-1" onclick="select(1)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-2" onclick="select(2)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-3" onclick="select(3)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-4" onclick="select(4)">
+          .
+        </button>
 
-              <button class="connection-tile" id="tile-9" onclick="select(9)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-10" onclick="select(10)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-11" onclick="select(11)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-12" onclick="select(12)">
-                .
-              </button>
+        <button class="connection-tile" id="tile-5" onclick="select(5)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-6" onclick="select(6)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-7" onclick="select(7)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-8" onclick="select(8)">
+          .
+        </button>
 
-              <button class="connection-tile" id="tile-13" onclick="select(13)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-14" onclick="select(14)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-15" onclick="select(15)">
-                .
-              </button>
-              <button class="connection-tile" id="tile-16" onclick="select(16)">
-                .
-              </button>
-            </div>
-            <div id="connections-controls">
-              <button>Guess</button>
-              <p>Number of guesses left</p>
-            </div>
-          </div>
-        </section>
-      </main>
+        <button class="connection-tile" id="tile-9" onclick="select(9)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-10" onclick="select(10)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-11" onclick="select(11)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-12" onclick="select(12)">
+          .
+        </button>
 
-      <footer>
-        <p>Made with <span class="heart">♥</span></p>
-      </footer>
+        <button class="connection-tile" id="tile-13" onclick="select(13)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-14" onclick="select(14)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-15" onclick="select(15)">
+          .
+        </button>
+        <button class="connection-tile" id="tile-16" onclick="select(16)">
+          .
+        </button>
+      </div>
+      <div id="connections-controls">
+        <button>Guess</button>
+        <p>Number of guesses left</p>
+      </div>
     </div>
+  </div>
+  </main>
 
-    <script src="/client.js"></script>
-  </body>
+  <footer>
+    <p>Made with <span class="heart">♥</span></p>
+  </footer>
+
+  <script src="/client.js"></script>
+</body>
+
 </html>

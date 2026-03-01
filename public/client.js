@@ -29,6 +29,21 @@ document.getElementById("auth-button").addEventListener("click", () => {
   window.location.href = "/api/authenticate";
 });
 
+//* DISPLAY HELPERS *//
+function hideAllExcept(targetId) {
+  contentIds = ['placeholder', 'auth-status', 'top-songs-container', 'top-artists-container', 'top-albums-container', 'connections-container']
+  contentIds.map((id) => {
+    if (id != targetId) {
+      const container = document.getElementById(id);
+      container.style.display = 'none';
+    }
+    else {
+      const container = document.getElementById(id);
+      container.style.display = 'block';
+    }
+  });
+}
+
 //* TOP SONGS *//
 async function fetchTopSongs(accessToken) {
   const container = document.getElementById("top-songs-container");
@@ -108,6 +123,7 @@ async function loadTopSongs() {
   if (accessToken) {
     topSongs = await fetchTopSongs(accessToken);
     displayTopSongs(topSongs);
+    hideAllExcept('top-songs-container');
   } else {
     alert("Access token is required to fetch your top songs.");
   }
@@ -184,6 +200,8 @@ async function loadTopArtists() {
   if (accessToken) {
     topArtists = await fetchTopArtists(accessToken);
     displayTopArtists(topArtists);
+    hideAllExcept('top-artists-container');
+
   } else {
     alert("Access token is required to fetch your top artists.");
   }
@@ -260,6 +278,8 @@ async function loadTopAlbums() {
   if (accessToken) {
     topAlbums = await fetchTopAlbums(accessToken);
     displayTopAlbums(topAlbums);
+    hideAllExcept('top-albums-container');
+
   } else {
     alert("Access token is required to fetch your top albums.");
   }
@@ -284,7 +304,10 @@ async function loadConnections() {
   if (accessToken) {
     let topSongs = await fetchTopSongs(accessToken);
     console.log(topSongs);
-    const container = document.getElementById("connections-containers");
+
+    // display the grid and controls
+    hideAllExcept('connections-container');
+
 
     // get 4 songs from the top (that have lyrics)
     // get the lyrics
