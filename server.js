@@ -29,6 +29,9 @@ const REDIRECT_URI = `https://spotify.madisavage.gay/api/callback`;
 let accessToken = null;
 let tokenExpiration = null;
 
+// Optional development token for local testing (bypasses OAuth)
+const DEV_TOKEN = process.env.SPOTIFY_DEV_TOKEN;
+
 // GitHub webhook secret (set this in your .env file)
 const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET;
 
@@ -36,6 +39,15 @@ const WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET;
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Check if dev token is available (for local testing)
+app.get("/api/dev-token", (req, res) => {
+  if (DEV_TOKEN) {
+    res.json({ token: DEV_TOKEN, isDev: true });
+  } else {
+    res.json({ token: null, isDev: false });
+  }
 });
 
 // Initiate Spotify OAuth flow
@@ -135,7 +147,11 @@ app.get("/api/top-songs", async (req, res) => {
       previewUrl: track.preview_url,
       spotifyUrl: track.external_urls.spotify,
       duration: Math.floor(track.duration_ms / 1000),
+<<<<<<< HEAD
       id: track.id
+=======
+      id: track.id,
+>>>>>>> main
     }));
 
     res.json({ topSongs });

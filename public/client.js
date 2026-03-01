@@ -2,7 +2,7 @@
 let storedAccessToken = null;
 
 // Check for access token in URL on page load
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const accessToken = urlParams.get("access_token");
   const error = urlParams.get("error");
@@ -10,6 +10,24 @@ window.addEventListener("DOMContentLoaded", () => {
   const authStatus = document.getElementById("auth-status");
   const authButton = document.getElementById("auth-button");
 
+  // Check for dev token first (for local testing)
+  try {
+    const devTokenResponse = await fetch("/api/dev-token");
+    const devTokenData = await devTokenResponse.json();
+
+    if (devTokenData.token) {
+      storedAccessToken = devTokenData.token;
+      authStatus.innerHTML =
+        '<p class="success">✅ Using development token (local testing mode)</p>';
+      authButton.textContent = "Authenticated ✓ (Dev)";
+      authButton.disabled = true;
+      return; // Skip OAuth flow if dev token is available
+    }
+  } catch (err) {
+    console.error("Error checking for dev token:", err);
+  }
+
+  // Handle OAuth flow
   if (error) {
     authStatus.innerHTML = `<p class="error">❌ Authentication failed: ${error}</p>`;
   } else if (accessToken) {
@@ -31,15 +49,21 @@ document.getElementById("auth-button").addEventListener("click", () => {
 
 //* DISPLAY HELPERS *//
 function hideAllExcept(targetId) {
-  contentIds = ['placeholder', 'auth-status', 'top-songs-container', 'top-artists-container', 'top-albums-container', 'connections-container']
+  contentIds = [
+    "placeholder",
+    "auth-status",
+    "top-songs-container",
+    "top-artists-container",
+    "top-albums-container",
+    "connections-container",
+  ];
   contentIds.map((id) => {
     if (id != targetId) {
       const container = document.getElementById(id);
-      container.style.display = 'none';
-    }
-    else {
+      container.style.display = "none";
+    } else {
       const container = document.getElementById(id);
-      container.style.display = 'block';
+      container.style.display = "block";
     }
   });
 }
@@ -105,7 +129,7 @@ function displayTopSongs(songs) {
     )
     .join("");
 
-  container.innerHTML = `<div class="songs-list">${songsHTML}</div>`;
+  container.innerHTML = `<h1 class="content-title">Your Top Songs</h1><div class="songs-list">${songsHTML}</div>`;
 }
 
 let currentAudio = null;
@@ -118,15 +142,14 @@ function playPreview(url) {
 }
 
 async function loadTopSongs() {
-  const accessToken = prompt("Enter your Spotify access token:");
-
-  if (accessToken) {
-    topSongs = await fetchTopSongs(accessToken);
-    displayTopSongs(topSongs);
-    hideAllExcept('top-songs-container');
-  } else {
-    alert("Access token is required to fetch your top songs.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+
+  topSongs = await fetchTopSongs(storedAccessToken);
+  displayTopSongs(topSongs);
+  hideAllExcept("top-songs-container");
 }
 
 document
@@ -191,20 +214,18 @@ function displayTopArtists(artists) {
     )
     .join("");
 
-  container.innerHTML = `<div class="songs-list">${artistsHTML}</div>`;
+  container.innerHTML = `<h1 class="content-title">Your Top Artists</h1><div class="songs-list">${artistsHTML}</div>`;
 }
 
 async function loadTopArtists() {
-  const accessToken = prompt("Enter your Spotify access token:");
-
-  if (accessToken) {
-    topArtists = await fetchTopArtists(accessToken);
-    displayTopArtists(topArtists);
-    hideAllExcept('top-artists-container');
-
-  } else {
-    alert("Access token is required to fetch your top artists.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+
+  topArtists = await fetchTopArtists(storedAccessToken);
+  displayTopArtists(topArtists);
+  hideAllExcept("top-artists-container");
 }
 
 document
@@ -269,20 +290,18 @@ function displayTopAlbums(albums) {
     )
     .join("");
 
-  container.innerHTML = `<div class="songs-list">${albumsHTML}</div>`;
+  container.innerHTML = `<h1 class="content-title">Your Top Albums</h1><div class="songs-list">${albumsHTML}</div>`;
 }
 
 async function loadTopAlbums() {
-  const accessToken = prompt("Enter your Spotify access token:");
-
-  if (accessToken) {
-    topAlbums = await fetchTopAlbums(accessToken);
-    displayTopAlbums(topAlbums);
-    hideAllExcept('top-albums-container');
-
-  } else {
-    alert("Access token is required to fetch your top albums.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+
+  topAlbums = await fetchTopAlbums(storedAccessToken);
+  displayTopAlbums(topAlbums);
+  hideAllExcept("top-albums-container");
 }
 
 document
@@ -292,10 +311,6 @@ document
 // CONNECTIONS CODE
 document.getElementById("load-connections").addEventListener("click", () => {
   loadConnections();
-});
-
-document.getElementById("connections-guess").addEventListener("click", () => {
-  makeGuess();
 });
 
 // should add a check for has lyrics before it returns
@@ -308,38 +323,37 @@ let validSets = [new Set(), new Set(), new Set(), new Set()];
 let guessesLeft = 5;
 
 async function loadConnections() {
-  const accessToken = prompt("Enter your Spotify access token:");
-  if (accessToken) {
-    let topSongs = await fetchTopSongs(accessToken);
-
-    // display the grid and controls
-    hideAllExcept('connections-container');
-
-    // get 4 songs from the top (that have lyrics)
-    // get the lyrics
-    // pick 4 discrete chunks from the lyrics
-    let song1 = getRandomSong(topSongs);
-    let song2 = getRandomSong(topSongs);
-    let song3 = getRandomSong(topSongs);
-    let song4 = getRandomSong(topSongs);
-
-    let usedSongs = [song1, song2, song3, song4];
-
-    let i = 1;
-    let lyrics = usedSongs.map((song) => {
-      // console.log("get lyrics for", song);
-      // validSets.i.add();
-      // should map to song index or something to keep them grouped?
-    });
-
-    // have a way to click max 4 tiles - done
-    // have a way to run select if 4 tiles are selected - done
-    // select checks if those 4 tiles are connected
-    // have some kind of variable map associated?
-    // shuffle option??? - no
-  } else {
-    alert("Access token is required to fetch your top songs.");
+  if (!storedAccessToken) {
+    alert("Please authenticate with Spotify first!");
+    return;
   }
+  let topSongs = await fetchTopSongs(accessToken);
+
+  // display the grid and controls
+  hideAllExcept('connections-container');
+
+  // get 4 songs from the top (that have lyrics)
+  // get the lyrics
+  // pick 4 discrete chunks from the lyrics
+  let song1 = getRandomSong(topSongs);
+  let song2 = getRandomSong(topSongs);
+  let song3 = getRandomSong(topSongs);
+  let song4 = getRandomSong(topSongs);
+
+  let usedSongs = [song1, song2, song3, song4];
+
+  let i = 1;
+  let lyrics = usedSongs.map((song) => {
+    // console.log("get lyrics for", song);
+    // validSets.i.add();
+    // should map to song index or something to keep them grouped?
+  });
+
+  // have a way to click max 4 tiles - done
+  // have a way to run select if 4 tiles are selected - done
+  // select checks if those 4 tiles are connected
+  // have some kind of variable map associated?
+  // shuffle option??? - no
 }
 
 function select(tileId) {
@@ -369,7 +383,7 @@ function addResultSet(index) {
 }
 
 function makeGuess() {
-  if (guessesLeft < 1){
+  if (guessesLeft < 1) {
     console.log('out of guesses!');
     return;
   }
