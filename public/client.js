@@ -111,26 +111,6 @@ async function fetchTopSongs(accessToken) {
   }
 }
 
-// //* LYRICS *//
-// async function getLyrics(song) {
-//   try {
-//     const response = await fetch(
-//       `https://lrclib.net/api/get?artist_name=${song.artist}&track_name=${song.name}&album_name=${song.album}&duration=${song.duration}`,
-//     );
-//     const data = await response.json();
-
-//     if (!response.ok) {
-//       throw new Error(data.error || "Failed to fetch lyrics");
-//     }
-
-//     // console.log(data.trackName + ":\n\n" + data.plainLyrics);
-
-//     return data;
-//   } catch (error) {
-//     console.error(error); // Catches HTTP errors and network errors
-//   }
-// }
-
 function displayTopSongs(songs) {
   const container = document.getElementById("top-songs-container");
 
@@ -353,15 +333,17 @@ document.getElementById("connections-guess").addEventListener("click", () => {
 });
 
 async function getLyrics() {
+  console.log("called lyric endpoint");
   const temp = await fetch(`/api/lyrics`);
   const data = await temp.json();
-  console.log(data);
+  // console.log(data);
   return data.songs;
 }
 
 // should add a check for has lyrics before it returns
 async function getRandomSong(songs, used) {
-  console.log(songs);
+  // console.log(songs);
+  console.log("called getRandomSong");
   if (used.size > songs.length) {
     console.log("ran out of songs to check!");
     return null;
@@ -373,24 +355,15 @@ async function getRandomSong(songs, used) {
   const tempSong = songs[index];
 
   let allSongsLyrics = await getLyrics();
-  console.log(allSongsLyrics);
+  // console.log(allSongsLyrics);
 
-  return allSongsLyrics[0];
-
-  // if (allSongsLyrics) {
-  //   used.add(index);
-  //   return tempSong;
-  // } else {
-  //   console.log("issue");
-  //   used.add(index);
-  //   return await getRandomSong(songs, used);
-  // }
+  return allSongsLyrics[index];
 }
 
 // make sure to avoid duplicates
 function fourRandomLyrics(song) {
   let toReturn = new Set();
-  console.log(song);
+  console.log("SONG:", song);
 
   // Check if song has lyrics
   if (!song || !song.lyrics) {
@@ -402,21 +375,24 @@ function fourRandomLyrics(song) {
   console.log(JSON.stringify(lyrics));
   // Make sure we have enough lyrics
   if (lyrics.length < 4) {
-    console.error("Not enough lyrics lines:", lyrics.length);
+    console.error("Not enough lyric lines:", lyrics.length);
     return toReturn;
   }
 
   const index1 = Math.floor(Math.random() * lyrics.length);
 
   let lyric1 = lyrics[index1];
+  // console.log("L1:", lyric1)
   toReturn.add(lyric1);
 
   while (toReturn.size < 4) {
     const index = Math.floor(Math.random() * lyrics.length);
     let lyric = lyrics[index];
+    // console.log("L", index, ": ", lyric);
     toReturn.add(lyric);
   }
 
+  console.log(toReturn);
   return toReturn;
 }
 
@@ -425,10 +401,9 @@ let validSets = [[], [], [], []];
 let validSetPositions = [new Set(), new Set(), new Set(), new Set()];
 let guessesLeft = 5;
 
-function displayLyricsInTiles() {
+function displayLyricsInTiles(validSets) {
   let grid = document.getElementById("connections-tiles");
-
-  let newValidSet = new Set();
+  console.log("DISPLAY", validSets);
 
   let tiles = grid.children;
 
@@ -439,12 +414,13 @@ function displayLyricsInTiles() {
 
   for (let i = 0; i < 16; i++) {
     let tile = tiles[i];
-    if (!usedLyrics.has(index)) {
-      tile.innerHTML = validSets[index1][index2];
-      validSetPositions[index1].add(i);
-      // newValidSet[i] = validSets[index1][index2]
-      usedLyrics.add(index);
-    }
+    // if (!usedLyrics.has(index)) {
+    tile.innerHTML = validSets[i % 4];
+    console.log(validSets[i % 4]);
+    validSetPositions[index1].add(i);
+    // newValidSet[i] = validSets[index1][index2]
+    usedLyrics.add(index);
+    // }
   }
 }
 
@@ -464,18 +440,42 @@ async function loadConnections() {
 
   console.log("getting songs with lyrics...");
   let song1 = await getRandomSong(topSongs, used);
-  console.log(song1);
-  let song2 = song1;
-  let song3 = song1;
-  let song4 = song1;
+  // console.log(song1);
+  let song2 = await getRandomSong(topSongs, used);
+  let song3 = await getRandomSong(topSongs, used);
+  let song4 = await getRandomSong(topSongs, used);
 
   let usedSongs = [song1, song2, song3, song4];
 
   for (songIndex in usedSongs) {
     validSets[songIndex] = fourRandomLyrics(usedSongs[songIndex]);
   }
+
+  console.log("VALID SETS: \n", validSets);
   // add lyrics to tiles at random but keep track of where they go
-  displayLyricsInTiles();
+  // displayLyricsInTiles(validSets);
+  let grid = document.getElementById("connections-tiles");
+  console.log("DISPLAY", validSets);
+
+  let tiles = grid.children;
+
+  console.log(validSets);
+
+  let usedLyrics = new Set();
+  let index1 = Math.floor(Math.random() * 4);
+  let index2 = Math.floor(Math.random() * 4);
+  let index = index1 * 4 + index2;
+
+  // for (let i = 0; i < 16; i++) {
+  //   let tile = tiles[i];
+  //   // if (!usedLyrics.has(index)) {
+  //     tile.innerHTML = validSets[0];
+  //     console.log("LOG: ", JSON.stringify(validSets));
+  //     validSetPositions[index1].add(i);
+  //     // newValidSet[i] = validSets[index1][index2]
+  //     usedLyrics.add(index);
+  //   // }
+  // }
 }
 
 function select(tileId) {

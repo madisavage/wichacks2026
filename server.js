@@ -308,9 +308,7 @@ async function fetchLyrics(songName, artistName, albumName, duration) {
 
 app.get("/api/lyrics", async (req, res) => {
   try {
-    const userAccessToken =
-      "BQDHDDBgoEdSPnuOK_CzN4FuFJgLEHQaS3u7xJmMW_-GIJ9vO1ggfL8g03baZfFpTEQcswcJ3MMkRMmkyE0nDD1ZlLDot3Eip77eknt5PTIhcmJK0TNeWZSZ0JWgyFK8ilqApWTXjAex8rPDWVdfUR42_3Al15k551DcWBUxp0l5myw7-rhbyHTwlhzVcD6xOyw7VWRM9jVBXsKbLuS0kMqfe7fD7ZCoIoybz7d2xu_iy2_D_muik_EsOWc81Hcq8xfFO6zytYXDFHVERbl921ZtSJKsrwRgKJvc8KQGnbKXuXAJYhKaFcPBwHoIpwbpBzMc";
-
+    const userAccessToken = process.env.SPOTIFY_DEV_TOKEN;
     console.log(userAccessToken);
 
     if (!userAccessToken) {
