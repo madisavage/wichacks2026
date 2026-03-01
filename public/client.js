@@ -108,10 +108,12 @@ async function getLyrics(song) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.log("issue finding lyrics");
       throw new Error(data.error || "Failed to fetch lyrics");
     }
-    console.log(data.trackName + ":\n\n" + data.plainLyrics);
+
+    // console.log(data.trackName + ":\n\n" + data.plainLyrics);
+
+    return data;
   } catch (error) {
     console.error(error); // Catches HTTP errors and network errors
   }
@@ -331,13 +333,22 @@ document.getElementById("load-connections").addEventListener("click", () => {
   loadConnections();
 });
 
+async function checkForLyrics(song) {
+  const temp = await getLyrics(song);
+  if (temp.plainLyrics) {
+    return true;
+  }
+  return false;
+}
+
 // should add a check for has lyrics before it returns
 function getRandomSong(songs) {
   const tempSong = songs[Math.floor(Math.random() * songs.length)];
-  if (getLyrics(tempSong)) {
+
+  if (checkForLyrics(tempSong)) {
     return tempSong;
   } else {
-    getRandomSong(songs);
+    console.log("issue");
   }
 }
 
@@ -365,9 +376,23 @@ async function loadConnections() {
 
   let usedSongs = [song1, song2, song3, song4];
 
-  let lyrics = usedSongs.map((song) => {
-    console.log("get lyrics for", song);
-    // should map to song index or something to keep them grouped?
+  let lyricsPromises = usedSongs.map((song) => {
+    return getLyrics(song)
+      .then((lyrics) => {
+        // console.log("Lyrics for", song, ":", lyrics);
+        return { song, lyrics: lyrics.plainLyrics };
+      })
+      .catch((error) => {
+        console.error("Failed to get lyrics for", song, error);
+        return { song, lyrics: null };
+      });
+  });
+
+  Promise.all(lyricsPromises).then((lyricsArray) => {
+    usedSongs = lyricsArray.map((item) => {
+      return { ...item.song, lyrics: item.lyrics };
+    });
+    console.log("Updated usedSongs with lyrics:", usedSongs);
   });
 
   // have a way to click max 4 tiles
