@@ -46,18 +46,42 @@
 #nav {
   display: flex;
   justify-content: space-between;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 2rem;
+  gap: 1rem;
 }
 
 #nav > button {
-  border: 1px solid var(--color-primary);
-  margin: 10px 5px;
-  padding: 10px;
-  width: 20%;
-  font-size: 1.5rem;
+  flex: 1;
+  padding: 1.25rem;
+  border: none;
+  background-color: var(--color-background-bright);
+  border-radius: 1rem;
+  box-shadow: 0 0.1875rem 0.75rem var(--shadow-light);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+#nav > button:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.3125rem 1rem var(--shadow-medium);
+  background-color: var(--color-primary-hover);
+  color: white;
 }
 
 #nav > .selected {
-  background-color: var(--color-success);
+  background-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 0.3125rem 1rem var(--shadow-medium);
 }
 
 #content > * {
