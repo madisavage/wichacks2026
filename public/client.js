@@ -1,5 +1,5 @@
 //* AUTHENTICATION *//
-let storedAccessToken = null;
+let storedAccessToken = 'BQDtWq8k9nlGBGDvjM0zOlsj-MwYtnBYvNqEvI75_n_0y4GPxsm1G54DD5A8cZNv2VTUbRPIWEUf5bEbd1I-cUCxiu6jaQTfNru5uBvIEjMDD5txEBRgaSTgn_M_a8v3cvkmydrj4fcEX32HkKWFVDHHxaGHRqKwFwD1w3jakLg5cBxQMgkJtIeMhQUe-EZbZARsJprpcgfW0k1Y6FfbYpyxaJrkDW8wLRoJE3R0e0WqIW5C0uqbtcVpoi5cwaWX9RzUZdDYu9Kcsq_IcdwXrUg-2OGpH3n2ZUT4FbP9zywCRz9njUw33lUW0S6k3QaT-vef';
 
 // Check for access token in URL on page load
 window.addEventListener("DOMContentLoaded", async () => {
@@ -347,6 +347,10 @@ document.getElementById("load-connections").addEventListener("click", () => {
   loadConnections();
 });
 
+document.getElementById("connections-guess").addEventListener("click", () => {
+  makeGuess();
+});
+
 async function checkForLyrics(song) {
   const temp = await getLyrics(song);
   if (temp.plainLyrics) {
@@ -375,7 +379,7 @@ async function loadConnections() {
     alert("Please authenticate with Spotify first!");
     return;
   }
-  let topSongs = await fetchTopSongs(accessToken);
+  let topSongs = await fetchTopSongs(storedAccessToken);
 
   // display the grid and controls
   hideAllExcept("connections-container");
