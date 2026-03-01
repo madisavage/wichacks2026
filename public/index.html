@@ -49,7 +49,7 @@
         </button>
         <div id="connections-container">
           <div id="connections-tiles">
-            <button class="connection-tile" id="tile-1" onclick="select(1)"></button>
+            <button class="connection-tile" id="tile-1" onclick="select(1)">.</button>
             <button class="connection-tile" id="tile-2" onclick="select(2)">.</button>
             <button class="connection-tile" id="tile-3" onclick="select(3)">.</button>
             <button class="connection-tile" id="tile-4" onclick="select(4)">.</button>
@@ -173,7 +173,7 @@
 
     document
       .getElementById("load-connections")
-      .addEventListener("click", () => loadConnections());
+      .addEventListener("click", () => {console.log('trying')});
 
     // should add a check for has lyrics before it returns
     function getRandomSong(songs) {
