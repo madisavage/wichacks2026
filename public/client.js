@@ -46,7 +46,8 @@ async function fetchTopSongs(accessToken) {
       throw new Error(data.error || "Failed to fetch top songs");
     }
 
-    displayTopSongs(data.topSongs);
+    // displayTopSongs(data.topSongs);
+    return data.topSongs;
   } catch (error) {
     container.innerHTML = `
             <div class="error">
@@ -101,21 +102,20 @@ function playPreview(url) {
   currentAudio.play();
 }
 
-document.getElementById("load-top-songs").addEventListener("click", () => {
-  let accessToken = storedAccessToken;
-
-  if (!accessToken) {
-    accessToken = prompt("Enter your Spotify access token:");
-  }
+async function loadTopSongs() {
+  const accessToken = prompt("Enter your Spotify access token:");
 
   if (accessToken) {
-    fetchTopSongs(accessToken);
+    topSongs = await fetchTopSongs(accessToken);
+    displayTopSongs(topSongs);
   } else {
-    alert(
-      "Access token is required to fetch your top songs. Please authenticate first.",
-    );
+    alert("Access token is required to fetch your top songs.");
   }
-});
+}
+
+document
+  .getElementById("load-top-songs")
+  .addEventListener("click", () => loadTopSongs());
 
 //* TOP ARTISTS *//
 async function fetchTopArtists(accessToken) {
@@ -133,7 +133,7 @@ async function fetchTopArtists(accessToken) {
       throw new Error(data.error || "Failed to fetch top artists");
     }
 
-    displayTopArtists(data.topArtists);
+    return data.topArtists;
   } catch (error) {
     container.innerHTML = `
             <div class="error">
@@ -178,21 +178,20 @@ function displayTopArtists(artists) {
   container.innerHTML = `<div class="songs-list">${artistsHTML}</div>`;
 }
 
-document.getElementById("load-top-artists").addEventListener("click", () => {
-  let accessToken = storedAccessToken;
-
-  if (!accessToken) {
-    accessToken = prompt("Enter your Spotify access token:");
-  }
+async function loadTopArtists() {
+  const accessToken = prompt("Enter your Spotify access token:");
 
   if (accessToken) {
-    fetchTopArtists(accessToken);
+    topArtists = await fetchTopArtists(accessToken);
+    displayTopArtists(topArtists);
   } else {
-    alert(
-      "Access token is required to fetch your top artists. Please authenticate first.",
-    );
+    alert("Access token is required to fetch your top artists.");
   }
-});
+}
+
+document
+  .getElementById("load-top-artists")
+  .addEventListener("click", () => loadTopArtists());
 
 //* TOP ALBUMS *//
 async function fetchTopAlbums(accessToken) {
@@ -210,7 +209,7 @@ async function fetchTopAlbums(accessToken) {
       throw new Error(data.error || "Failed to fetch top albums");
     }
 
-    displayTopAlbums(data.topAlbums);
+    return data.topAlbums;
   } catch (error) {
     container.innerHTML = `
             <div class="error">
@@ -255,18 +254,65 @@ function displayTopAlbums(albums) {
   container.innerHTML = `<div class="songs-list">${albumsHTML}</div>`;
 }
 
-document.getElementById("load-top-albums").addEventListener("click", () => {
-  let accessToken = storedAccessToken;
-
-  if (!accessToken) {
-    accessToken = prompt("Enter your Spotify access token:");
-  }
+async function loadTopAlbums() {
+  const accessToken = prompt("Enter your Spotify access token:");
 
   if (accessToken) {
-    fetchTopAlbums(accessToken);
+    topAlbums = await fetchTopAlbums(accessToken);
+    displayTopAlbums(topAlbums);
   } else {
-    alert(
-      "Access token is required to fetch your top albums. Please authenticate first.",
-    );
+    alert("Access token is required to fetch your top albums.");
   }
+}
+
+document
+  .getElementById("load-top-albums")
+  .addEventListener("click", () => loadTopAlbums());
+
+// CONNECTIONS CODE
+document.getElementById("load-connections").addEventListener("click", () => {
+  loadConnections();
 });
+
+// should add a check for has lyrics before it returns
+function getRandomSong(songs) {
+  return songs[Math.floor(Math.random() * songs.length)];
+}
+
+async function loadConnections() {
+  const accessToken = prompt("Enter your Spotify access token:");
+  if (accessToken) {
+    let topSongs = await fetchTopSongs(accessToken);
+    console.log(topSongs);
+    const container = document.getElementById("connections-containers");
+
+    // get 4 songs from the top (that have lyrics)
+    // get the lyrics
+    // pick 4 discrete chunks from the lyrics
+    topSongs.forEach((song) => console.log(song));
+
+    let song1 = getRandomSong(topSongs);
+    let song2 = getRandomSong(topSongs);
+    let song3 = getRandomSong(topSongs);
+    let song4 = getRandomSong(topSongs);
+
+    let usedSongs = [song1, song2, song3, song4];
+
+    let lyrics = usedSongs.map((song) => {
+      console.log("get lyrics for", song);
+      // should map to song index or something to keep them grouped?
+    });
+
+    // have a way to click max 4 tiles
+    // have a way to run select if 4 tiles are selected
+    // select checks if those 4 tiles are connected
+    // have some kind of variable map associated?
+    // shuffle option???
+  } else {
+    alert("Access token is required to fetch your top songs.");
+  }
+}
+
+function select(tileId) {
+  console.log("clicking button ", tileId);
+}
