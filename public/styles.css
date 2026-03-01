@@ -1,321 +1,334 @@
 :root {
-    /* Brand Colors */
-    --color-spotify-black: #191414;
-    --color-spotify-dark-gray: #333;
+  /* Brand Colors */
+  --color-spotify-black: #191414;
+  --color-spotify-dark-gray: #333;
 
-    /* UI Colors */
-    --color-primary: #1db954;
-    --color-primary-hover: #1ed760;
-    --color-background-white: #fafffa;
+  /* UI Colors */
+  --color-primary: #1db954;
+  --color-primary-hover: #1ed760;
+  --color-background-bright: #b8ffb8;
+  --color-background-white: #fafffa;
 
-    /* Text Colors */
-    --color-text-primary: #191414;
-    --color-text-secondary: #4a4a4a;
-    --color-text-tertiary: #545454;
-    --color-text-muted: #666;
-    --color-text-light: #333;
+  /* Text Colors */
+  --color-text-primary: #191414;
+  --color-text-secondary: #4a4a4a;
+  --color-text-tertiary: #545454;
+  --color-text-muted: #666;
+  --color-text-light: #333;
+  --color-text-accent: #0d592a;
+  /* Status Colors */
+  --color-error: #e22134;
+  --color-success: #1db954;
 
-    /* Status Colors */
-    --color-error: #e22134;
-    --color-success: #1db954;
+  /* Shadow Colors */
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-dark: rgba(0, 0, 0, 0.2);
 
-    /* Shadow Colors */
-    --shadow-light: rgba(0, 0, 0, 0.1);
-    --shadow-medium: rgba(0, 0, 0, 0.15);
-    --shadow-dark: rgba(0, 0, 0, 0.2);
+  /* Connection Colors */
+  --blue: #5b5bfc;
+  --purple: #b443ff;
+  --red: #ff544e;
+  --yellow: #fae64e;
+}
 
-    /* Connection Colors */
-    --blue: #5b5bfc;
-    --purple: #b443ff;
-    --red: #ff544e;
-    --yellow: #fae64e;
+* {
+  font-family: "Jua", sans-serif;
 }
 
 .content-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 1.25rem;
-    color: var(--color-background-white);
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1.25rem;
+  color: var(--color-text-primary);
 }
 
 #nav {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
-#nav>button {
-    border: 1px solid var(--color-primary);
-    margin: 10px 5px;
-    padding: 10px;
-    width: 20%;
-    font-size: 1.5rem;
+#nav > button {
+  border: 1px solid var(--color-primary);
+  margin: 10px 5px;
+  padding: 10px;
+  width: 20%;
+  font-size: 1.5rem;
 }
 
-#nav>.selected {
-    background-color: var(--color-success);
+#nav > .selected {
+  background-color: var(--color-success);
 }
 
-#content>* {
-    padding-top: 1.25rem;
-    padding-bottom: 4.25rem;
-    text-align: center;
-    background-color: var(--color-spotify-dark-gray);
+#content > * {
+  padding-top: 1.25rem;
+  padding-bottom: 4.25rem;
+  text-align: center;
+  background-color: var(--color-background-white);
 }
 
 /* Lists Styling */
 .songs-list {
-    max-width: 75rem;
-    margin: 0 auto;
-    padding: 2rem;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .song-item {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 1.25rem;
-    margin-bottom: 1.25rem;
-    background-color: var(--color-background-white);
-    border-radius: 1rem;
-    box-shadow: 0 0.1875rem 0.75rem var(--shadow-light);
-    transition:
-        transform 0.2s,
-        box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background-color: var(--color-background-bright);
+  border-radius: 1rem;
+  box-shadow: 0 0.1875rem 0.75rem var(--shadow-light);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .song-item:hover {
-    transform: translateY(-0.125rem);
-    transform: scale(1.02);
-    box-shadow: 0 0.3125rem 1rem var(--shadow-medium);
+  transform: translateY(-0.125rem);
+  transform: scale(1.02);
+  box-shadow: 0 0.3125rem 1rem var(--shadow-medium);
 }
 
 .song-rank {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--color-primary);
-    min-width: 3rem;
-    text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text-primary);
+
+  min-width: 3rem;
+  text-align: center;
 }
 
 .song-image {
-    flex-shrink: 0;
+  flex-shrink: 0;
+}
+
+.song-image:hover {
+  transform: scale(2.5);
+  transition: transform 0.3s ease;
+  z-index: 10;
+  position: relative;
 }
 
 .song-image img {
-    width: 6.625rem;
-    height: 6.625rem;
-    border-radius: 0.75rem;
-    object-fit: cover;
-    box-shadow: 0 0.1875rem 0.3125rem var(--shadow-dark);
+  width: 6.625rem;
+  height: 6.625rem;
+  border-radius: 0.75rem;
+  object-fit: cover;
+  box-shadow: 0 0.1875rem 0.3125rem var(--shadow-dark);
 }
 
 .song-info {
-    flex-grow: 1;
-    text-align: left;
-    min-width: 0;
+  flex-grow: 1;
+  text-align: left;
+  min-width: 0;
 }
 
 .song-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0 0 0.4375rem 0;
-    color: var(--color-text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.4375rem 0;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .song-artist {
-    font-size: 1.25rem;
-    color: var(--color-text-secondary);
-    margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.25rem 0;
 }
 
 .song-album {
-    font-size: 1rem;
-    color: var(--color-text-tertiary);
-    margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-tertiary);
+  margin: 0;
 }
 
 .song-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .btn-play,
 .btn-spotify {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 1.5rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.2s;
-    white-space: nowrap;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .btn-play {
-    background-color: var(--color-primary);
-    color: white;
+  background-color: var(--color-primary);
+  color: white;
 }
 
 .btn-play:hover {
-    background-color: var(--color-primary-hover);
-    transform: scale(1.05);
+  background-color: var(--color-primary-hover);
+  transform: scale(1.05);
 }
 
 .btn-spotify {
-    background-color: var(--color-spotify-black);
-    color: white;
-    display: inline-block;
+  background-color: var(--color-spotify-black);
+  color: white;
+  display: inline-block;
 }
 
 .btn-spotify:hover {
-    background-color: var(--color-spotify-dark-gray);
-    transform: scale(1.05);
+  background-color: var(--color-spotify-dark-gray);
+  transform: scale(1.05);
 }
 
 /* Loading and Error States */
 .loading {
-    font-size: 1.5rem;
-    color: var(--color-text-light);
-    padding: 3rem;
+  font-size: 1.5rem;
+  color: var(--color-text-light);
+  padding: 3rem;
 }
 
 .error {
-    color: var(--color-error);
-    padding: 1.5rem;
+  color: var(--color-error);
+  padding: 1.5rem;
 }
 
 .error-note {
-    font-size: 1.25rem;
-    color: var(--color-text-muted);
-    margin-top: 1rem;
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  margin-top: 1rem;
 }
 
 .no-data {
-    font-size: 1.5rem;
-    color: var(--color-text-muted);
-    padding: 3rem;
+  font-size: 1.5rem;
+  color: var(--color-text-muted);
+  padding: 3rem;
 }
 
 .success {
-    color: var(--color-success);
-    font-weight: 600;
+  color: var(--color-success);
+  font-weight: 600;
 }
 
 /* Responsive Design */
 @media (max-width: 48rem) {
-    .song-item {
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
+  .song-item {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 
-    .song-actions {
-        flex-direction: row;
-        width: 100%;
-        justify-content: flex-end;
-    }
+  .song-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+  }
 
-    .song-info {
-        flex-basis: 100%;
-    }
+  .song-info {
+    flex-basis: 100%;
+  }
 }
 
 #nav {
-    display: flex;
+  display: flex;
 }
 
-#content>* {
-    padding-top: 30px;
-    padding-bottom: 100px;
-    text-align: center;
+#content > * {
+  padding-top: 30px;
+  padding-bottom: 100px;
+  text-align: center;
 }
 
 #connections-tiles {
-    display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
 }
 
 .connections-tile {
-    justify-self: center;
-    align-self: center;
-    padding: 10px;
-    width: 90%;
-    height: 80%;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+  justify-self: center;
+  align-self: center;
+  padding: 10px;
+  width: 90%;
+  height: 80%;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
 #connections-controls {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  justify-content: center;
 }
 
 #connections-guess {
-    padding: 10px;
-    margin: 20px;
-    max-width: 200px;
-    font-size: 1.2srem;
+  padding: 10px;
+  margin: 20px;
+  max-width: 200px;
+  font-size: 1.2srem;
 }
 
 #results {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
 }
 
 .result-tile {
-    display: block;
-    padding: 10px;
-    margin: 10px;
+  display: block;
+  padding: 10px;
+  margin: 10px;
 }
 
 .num-1 {
-    background-color: var(--blue);
+  background-color: var(--blue);
 }
 
 .num-2 {
-    background-color: var(--purple);
+  background-color: var(--purple);
 }
 
 .num-3 {
-    background-color: var(--yellow);
+  background-color: var(--yellow);
 }
 
 .num-4 {
-    background-color: var(--red);
+  background-color: var(--red);
 }
 
 .selected {
-    background-color: var(--color-primary);
+  background-color: var(--color-primary);
 }
 
 #guesses-count {
-    background-color: var(--color-background-white);
-    width: 200px;
-    padding: 10px;
+  background-color: var(--color-background-white);
+  width: 200px;
+  padding: 10px;
 }
 
 #logo img {
-    max-width: 300px;
-    margin-bottom: 20px;
+  max-width: 300px;
+  margin-bottom: 20px;
 }
 
 #connections-container {
-    background-color: var(--color-background-white);
+  background-color: var(--color-background-white);
 }
 
-button{
-    word-wrap: break-word;
+button {
+  word-wrap: break-word;
 }
