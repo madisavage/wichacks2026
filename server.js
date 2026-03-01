@@ -135,6 +135,7 @@ app.get("/api/top-songs", async (req, res) => {
       previewUrl: track.preview_url,
       spotifyUrl: track.external_urls.spotify,
       duration: Math.floor(track.duration_ms / 1000),
+      id: track.id
     }));
 
     res.json({ topSongs });
