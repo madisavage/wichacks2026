@@ -1,3 +1,37 @@
+:root {
+  /* Brand Colors */
+  --color-spotify-black: #191414;
+  --color-spotify-dark-gray: #333;
+
+  /* UI Colors */
+  --color-primary: #1db954;
+  --color-primary-hover: #1ed760;
+  --color-background-white: #fafffa;
+
+  /* Text Colors */
+  --color-text-primary: #191414;
+  --color-text-secondary: #4a4a4a;
+  --color-text-tertiary: #545454;
+  --color-text-muted: #666;
+  --color-text-light: #333;
+
+  /* Status Colors */
+  --color-error: #e22134;
+  --color-success: #1db954;
+
+  /* Shadow Colors */
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-dark: rgba(0, 0, 0, 0.2);
+}
+
+.content-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1.25rem;
+  color: var(--color-background-white);
+}
+
 #nav {
   display: flex;
 }
@@ -6,7 +40,7 @@
   padding-top: 6.25rem;
   padding-bottom: 6.25rem;
   text-align: center;
-  background-color: violet;
+  background-color: var(--color-spotify-dark-gray);
 }
 
 /* Lists Styling */
@@ -22,9 +56,9 @@
   gap: 1.25rem;
   padding: 1.25rem;
   margin-bottom: 1.25rem;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--color-background-white);
   border-radius: 1rem;
-  box-shadow: 0 0.1875rem 0.75rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.1875rem 0.75rem var(--shadow-light);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -33,13 +67,13 @@
 .song-item:hover {
   transform: translateY(-0.125rem);
   transform: scale(1.02);
-  box-shadow: 0 0.3125rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.3125rem 1rem var(--shadow-medium);
 }
 
 .song-rank {
   font-size: 2rem;
   font-weight: bold;
-  color: #1db954;
+  color: var(--color-primary);
   min-width: 3rem;
   text-align: center;
 }
@@ -53,7 +87,7 @@
   height: 6.625rem;
   border-radius: 0.75rem;
   object-fit: cover;
-  box-shadow: 0 0.1875rem 0.3125rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.1875rem 0.3125rem var(--shadow-dark);
 }
 
 .song-info {
@@ -66,7 +100,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 0.4375rem 0;
-  color: #191414;
+  color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -74,13 +108,13 @@
 
 .song-artist {
   font-size: 1.25rem;
-  color: #4a4a4a;
+  color: var(--color-text-secondary);
   margin: 0 0 0.25rem 0;
 }
 
 .song-album {
   font-size: 1rem;
-  color: #545454;
+  color: var(--color-text-tertiary);
   margin: 0;
 }
 
@@ -106,52 +140,52 @@
 }
 
 .btn-play {
-  background-color: #1db954;
+  background-color: var(--color-primary);
   color: white;
 }
 
 .btn-play:hover {
-  background-color: #1ed760;
+  background-color: var(--color-primary-hover);
   transform: scale(1.05);
 }
 
 .btn-spotify {
-  background-color: #191414;
+  background-color: var(--color-spotify-black);
   color: white;
   display: inline-block;
 }
 
 .btn-spotify:hover {
-  background-color: #333;
+  background-color: var(--color-spotify-dark-gray);
   transform: scale(1.05);
 }
 
 /* Loading and Error States */
 .loading {
   font-size: 1.5rem;
-  color: #333;
+  color: var(--color-text-light);
   padding: 3rem;
 }
 
 .error {
-  color: #e22134;
+  color: var(--color-error);
   padding: 1.5rem;
 }
 
 .error-note {
   font-size: 1.25rem;
-  color: #666;
+  color: var(--color-text-muted);
   margin-top: 1rem;
 }
 
 .no-data {
   font-size: 1.5rem;
-  color: #666;
+  color: var(--color-text-muted);
   padding: 3rem;
 }
 
 .success {
-  color: #1db954;
+  color: var(--color-success);
   font-weight: 600;
 }
 
