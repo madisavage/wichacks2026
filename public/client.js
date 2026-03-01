@@ -510,7 +510,6 @@ async function loadColoring() {
         // Modifies the solutionImage in place to contain the finished result data and returns the
         // color palette used.
         const palette = solutionImage.picrossify(DIMENSION, DIMENSION);
-
         
         const colorPicker = document.getElementById('colorPicker');
         const GRID_SIZE = 20; // Hardcoding to 20 for now.
@@ -540,5 +539,5 @@ async function loadColoring() {
 }
 
 function checkCoverByNumberGrid() {
-
+    
 }
