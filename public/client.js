@@ -68,6 +68,17 @@ function hideAllExcept(targetId) {
   });
 }
 
+function resetSelectedButtons(targetId) {
+  const selectedItems = document.getElementsByClassName('btn-primary selected');
+  for (item in selectedItems) {
+    item = selectedItems[item]
+    item.className = 'btn-primary';
+  }
+
+  let targetItem = document.getElementById(targetId);
+  targetItem.className = 'btn-primary selected';
+}
+
 //* TOP SONGS *//
 async function fetchTopSongs(accessToken) {
   const container = document.getElementById("top-songs-container");
@@ -96,6 +107,26 @@ async function fetchTopSongs(accessToken) {
         `;
   } finally {
     loadButton.disabled = false;
+  }
+}
+
+//* LYRICS *//
+async function getLyrics(song) {
+  try {
+    const response = await fetch(
+      `https://lrclib.net/api/get?artist_name=${song.artist}&track_name=${song.name}&album_name=${song.album}&duration=${song.duration}`,
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to fetch lyrics");
+    }
+
+    // console.log(data.trackName + ":\n\n" + data.plainLyrics);
+
+    return data;
+  } catch (error) {
+    console.error(error); // Catches HTTP errors and network errors
   }
 }
 
@@ -150,6 +181,7 @@ async function loadTopSongs() {
   topSongs = await fetchTopSongs(storedAccessToken);
   displayTopSongs(topSongs);
   hideAllExcept("top-songs-container");
+  resetSelectedButtons('load-top-songs');
 }
 
 document
@@ -226,6 +258,7 @@ async function loadTopArtists() {
   topArtists = await fetchTopArtists(storedAccessToken);
   displayTopArtists(topArtists);
   hideAllExcept("top-artists-container");
+  resetSelectedButtons('load-top-artists');
 }
 
 document
@@ -302,6 +335,7 @@ async function loadTopAlbums() {
   topAlbums = await fetchTopAlbums(storedAccessToken);
   displayTopAlbums(topAlbums);
   hideAllExcept("top-albums-container");
+  resetSelectedButtons('load-top-albums');
 }
 
 document
@@ -313,9 +347,23 @@ document.getElementById("load-connections").addEventListener("click", () => {
   loadConnections();
 });
 
+async function checkForLyrics(song) {
+  const temp = await getLyrics(song);
+  if (temp.plainLyrics) {
+    return true;
+  }
+  return false;
+}
+
 // should add a check for has lyrics before it returns
 function getRandomSong(songs) {
-  return songs[Math.floor(Math.random() * songs.length)];
+  const tempSong = songs[Math.floor(Math.random() * songs.length)];
+
+  if (checkForLyrics(tempSong)) {
+    return tempSong;
+  } else {
+    console.log("issue");
+  }
 }
 
 let selected = new Set();
@@ -330,7 +378,8 @@ async function loadConnections() {
   let topSongs = await fetchTopSongs(accessToken);
 
   // display the grid and controls
-  hideAllExcept('connections-container');
+  hideAllExcept("connections-container");
+  resetSelectedButtons('load-connections');
 
   // get 4 songs from the top (that have lyrics)
   // get the lyrics
@@ -342,11 +391,23 @@ async function loadConnections() {
 
   let usedSongs = [song1, song2, song3, song4];
 
-  let i = 1;
-  let lyrics = usedSongs.map((song) => {
-    // console.log("get lyrics for", song);
-    // validSets.i.add();
-    // should map to song index or something to keep them grouped?
+  let lyricsPromises = usedSongs.map((song) => {
+    return getLyrics(song)
+      .then((lyrics) => {
+        // console.log("Lyrics for", song, ":", lyrics);
+        return { song, lyrics: lyrics.plainLyrics };
+      })
+      .catch((error) => {
+        console.error("Failed to get lyrics for", song, error);
+        return { song, lyrics: null };
+      });
+  });
+
+  Promise.all(lyricsPromises).then((lyricsArray) => {
+    usedSongs = lyricsArray.map((item) => {
+      return { ...item.song, lyrics: item.lyrics };
+    });
+    console.log("Updated usedSongs with lyrics:", usedSongs);
   });
 
   // have a way to click max 4 tiles - done
