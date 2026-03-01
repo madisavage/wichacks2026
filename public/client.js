@@ -402,11 +402,14 @@ function fourRandomLyrics(song) {
 }
 
 let selected = new Set();
-let validSets = [new Set(), new Set(), new Set(), new Set()];
+let validSets = [[], [], [], []];
+let validSetPositions = [new Set(), new Set(), new Set(), new Set()];
 let guessesLeft = 5;
 
 function displayLyricsInTiles() {
   let grid = document.getElementById("connections-tiles");
+
+  let newValidSet = new Set();
 
   let tiles = grid.children;
 
@@ -419,7 +422,8 @@ function displayLyricsInTiles() {
     let tile = tiles[i];
     if (!usedLyrics.has(index)) {
       tile.innerHTML = validSets[index1][index2];
-      validSets[index1][index2] = i;
+      validSetPositions[index1].add(i);
+      // newValidSet[i] = validSets[index1][index2]
       usedLyrics.add(index);
     }
   }
@@ -430,13 +434,16 @@ async function loadConnections() {
     alert("Please authenticate with Spotify first!");
     return;
   }
+  console.log("about to try loading songs...");
   let topSongs = await fetchTopSongs(storedAccessToken);
 
+  console.log("clearing styling on nav");
   hideAllExcept("connections-container");
   resetSelectedButtons("load-connections");
 
   let used = new Set();
 
+  console.log("getting songs with lyrics...");
   let song1 = await getRandomSong(topSongs, used);
   let song2 = await getRandomSong(topSongs, used);
   let song3 = await getRandomSong(topSongs, used);
@@ -469,7 +476,7 @@ function addResultSet(index) {
   let section = document.getElementById("results");
 
   let htmlString = "";
-  validSets.index.map((lyricString) => {
+  validSets[index].map((lyricString) => {
     htmlString +=
       '<div class="result-tile num-' + index + '">' + lyricString + "</div> ";
   });
@@ -488,7 +495,7 @@ function makeGuess() {
   }
   let index = -1;
   for (const set in validSets) {
-    if (selected.difference(validSets[set]).size == 0) {
+    if (selected.difference(validSetPositions[set]).size == 0) {
       console.log("set found");
       index = set;
     }
