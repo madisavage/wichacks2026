@@ -299,7 +299,7 @@ async function fetchLyrics(songName, artistName, albumName, duration) {
   }
 }
 
-app.get("/api/lyrics", async () => {
+app.get("/api/lyrics", async (req, res) => {
   try {
     const userAccessToken =
       req.query.token || req.headers.authorization?.split(" ")[1];
