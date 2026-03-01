@@ -478,6 +478,8 @@ function getRandomCover(albums) {
   return album.albumImage;
 }
 
+let solutionImage;
+
 async function loadColoring() {
   const GRID_SIZE = 10;
 
@@ -505,7 +507,7 @@ async function loadColoring() {
 
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-        const solutionImage = PixelImage.fromImageData(imageData, image.width, image.height)
+        solutionImage = PixelImage.fromImageData(imageData, image.width, image.height)
         
         // Modifies the solutionImage in place to contain the finished result data and returns the
         // color palette used.
@@ -534,11 +536,13 @@ async function loadColoring() {
         grid.addEventListener('click', function(event) {
           if (event.target && event.target.matches('.cover-by-number-grid-cell')) {
             event.target.style.backgroundColor = colorPicker.value;
+            event.target.style.opacity = 1;
           }
         });
         grid.addEventListener('mouseover', function(event) {
           if (event.buttons === 1 && event.target && event.target.matches('.cover-by-number-grid-cell')) {
             event.target.style.backgroundColor = colorPicker.value;
+            event.target.style.opacity = 1;
           }
         });
 
@@ -580,5 +584,17 @@ async function loadColoring() {
 }
 
 function checkCoverByNumberGrid() {
-    
+  const grid = document.getElementById('grid');
+  for (let i = 0; i < solutionImage.height; ++i) {
+    for (let j = 0; j < solutionImage.width; ++j) {
+      const cell = document.getElementById(`cell${i}-${j}`);
+      if (cell.style.backgroundColor !== solutionImage.pixels[i][j].toString()) {
+        alert("The solution is not correct!");
+        cell.style.background = 'red';
+        cell.style.opacity = 0.5;
+        return;
+      }
+    }
+  }
+  alert("The solution is correct!");
 }
