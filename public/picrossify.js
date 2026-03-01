@@ -111,10 +111,8 @@ class PixelImage {
     }
 
     // Creates an image from an ImageData
-    constructor(imageData, width, height) {
-        this.width = width;
-        this.height = height;
-        this.pixels = [];
+    static fromImageData(imageData, width, height) {
+        let rgbPixels = [];
         let k = 0;
         for (let i = 0; i < height; ++i) {
             let row = [];
@@ -122,8 +120,15 @@ class PixelImage {
                 row.push(new RGBPixel(imageData[k], imageData[k+1], imageData[k+2]));
                 k += 4;
             }
-            this.pixels.push(row);
+            rgbPixels.push(row);
         }
+        return new PixelImage(rgbPixels, width, height);
+    }
+
+    constructor(rgbPixels, width, height) {
+        this.width = width;
+        this.height = height;
+        this.pixels = rgbPixels;
     }
 
     toHtml() {
@@ -137,6 +142,10 @@ class PixelImage {
         return result;
     }
 
+    // The current picrossification algorithm reduces of the image using nearest neighbor,
+    // then splits up the corresponding color into "buckets" of supposedly similar colors.
+    // An improvement would be to use an algorithm that makes the color categories dependent
+    // on the album's color palette instead of assuming a universal color palette.
     picrossify(newWidth, newHeight) {
         let newPixels = [];
         const rowOffset = this.height / (2 * newHeight);
@@ -250,10 +259,7 @@ class PixelImage {
                 }
             }
         }
-
-        this.pixels = newPixels.map((row) => row.map((cielabPixel) => RGBPixel.fromCIELABPixel(cielabPixel)));
-        this.width = newWidth;
-        this.height = newHeight;
+        return new PixelImage(newPixels.map((row) => row.map((cielabPixel) => RGBPixel.fromCIELABPixel(cielabPixel))), newWidth, newHeight);
     }
 }
 
